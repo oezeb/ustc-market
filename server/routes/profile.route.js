@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 
 router.use(auth);
 
-// GET request to /api/user
+// GET request to /api/profile
 // Returns the user
 router.route('/').get((req, res) => {
     User.findById(req.userId)
@@ -13,7 +13,7 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json({ error: err.message }))
 })
 
-// PATCH request to /api/user
+// PATCH request to /api/profile
 // Updates the user (password)
 router.route('/').patch((req, res) => {
     User.findById(req.userId)

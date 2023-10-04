@@ -24,9 +24,9 @@ afterAll(async () => {
     await mongoose.connection.close();
 });
 
-describe("GET /api/user", () => {
+describe("GET /api/profile", () => {
     it("should return 401 if not logged in", async () => {
-        const response = await request(app).get("/api/user");
+        const response = await request(app).get("/api/profile");
         expect(response.status).toBe(401);
     });
 
@@ -38,16 +38,16 @@ describe("GET /api/user", () => {
 
         const cookie = response.headers['set-cookie'];
         response = await request(app)
-            .get("/api/user")
+            .get("/api/profile")
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body.username).toBe(user.username);
     });
 });
 
-describe("PATCH /api/user", () => {
+describe("PATCH /api/profile", () => {
     it("should return 401 if not logged in", async () => {
-        const response = await request(app).patch("/api/user");
+        const response = await request(app).patch("/api/profile");
         expect(response.status).toBe(401);
     });
 
@@ -60,7 +60,7 @@ describe("PATCH /api/user", () => {
         const cookie = response.headers['set-cookie'];
         const newpassword = "newpassword";
         response = await request(app)
-            .patch("/api/user")
+            .patch("/api/profile")
             .set('Cookie', cookie)
             .send({ password: newpassword });
         expect(response.status).toBe(204);

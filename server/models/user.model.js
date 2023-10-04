@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-// User schema includes username, password, name, email, role, timestamps, and image illustration
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -13,6 +12,8 @@ const userSchema = new mongoose.Schema({
     name: { type: String, default: 'anonymous' },
     avatar: { type: String },
     role: { type: String },
+
+    blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

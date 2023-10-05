@@ -94,51 +94,6 @@ describe("PATCH /api/profile", () => {
 // Profile Items
 // =============================================================================
 
-describe("GET /api/profile/items", () => {
-    var items = [];
-
-    beforeAll(async () => {
-        for (let i = 0; i < 3; i++) {
-            items.push(
-                await new Item({
-                    owner: user._id,
-                    name: `test${i}`
-                }).save()
-            );
-        }
-    });
-
-    afterAll(async () => { await Item.deleteMany({}); });
-
-    it("should return 401 if not logged in", async () => {
-        const response = await request(app).get("/api/profile/items");
-        expect(response.status).toBe(401);
-    });
-
-    it("should return 200 if logged in", async () => {
-        let response = await request(app)
-            .get("/api/profile/items")
-            .set('Cookie', cookie);
-        expect(response.status).toBe(200);
-        expect(response.body.length).toBe(items.length);
-
-        response = await request(app)
-            .get("/api/profile/items")
-            .query({ offset: 1, limit: 1 })
-            .set('Cookie', cookie);
-        expect(response.status).toBe(200);
-        expect(response.body.length).toBe(1);
-        expect(response.body[0].name).toBe(items[1].name);
-
-        const itemId = response.body[0]._id;
-        response = await request(app)
-            .get(`/api/profile/items/${itemId}`)
-            .set('Cookie', cookie);
-        expect(response.status).toBe(200);
-        expect(response.body.name).toBe(items[1].name);
-    });
-});
-
 describe("POST /api/profile/items", () => {
     afterAll(async () => { await Item.deleteMany({}); });
 

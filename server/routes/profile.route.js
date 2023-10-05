@@ -36,27 +36,6 @@ router.route('/').patch((req, res) => {
         .catch(err => res.status(400).json({ error: err.message }))
 })
 
-// GET request to /api/profile/items
-// Returns the user's items
-router.route('/items').get((req, res) => {
-    const offset = parseInt(req.query.offset) || 0
-    const limit = parseInt(req.query.limit) || undefined
-
-    Item.find({ owner: req.userId })
-        .skip(offset)
-        .limit(limit)
-        .then(items => res.json(items))
-        .catch(err => res.status(400).json({ error: err.message }))
-})
-
-// GET request to /api/profile/items/:id
-// Returns the user's item with the specified id
-router.route('/items/:id').get((req, res) => {
-    Item.findOne({ _id: req.params.id, owner: req.userId })
-        .then(item => res.json(item))
-        .catch(err => res.status(400).json({ error: err.message }))
-})
-
 // POST request to /api/profile/items
 // Creates a new item
 router.route('/items').post((req, res) => {

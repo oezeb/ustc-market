@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     password: { type: String },
     name: { type: String, default: 'anonymous' },
     avatar: { type: String },
-    role: { type: String },
 
     blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });

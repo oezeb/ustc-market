@@ -9,7 +9,6 @@ router.use(auth);
 router.route('/').get((req, res) => {
     const query = {}
     if (req.query.owner) query.owner = req.query.owner
-    if (req.query.name) query.name = req.query.name
     if (req.query.price) query.price = req.query.price
     if (req.query.priceMin) query.price = { $gte: req.query.priceMin }
     if (req.query.priceMax) query.price = { $lte: req.query.priceMax }

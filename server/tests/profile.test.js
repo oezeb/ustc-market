@@ -24,7 +24,7 @@ const newUser = async (user) => new User({
 
 const newItem = async (user) => new Item({
     owner: user._id,
-    name: `${user.username}'s item`
+    description: `${user.username}'s item`
 }).save();
 
 const newMessage = async (sender, receiver, item) => new Message({
@@ -107,11 +107,11 @@ describe("POST /api/profile/items", () => {
         let response = await request(app)
             .post("/api/profile/items")
             .set('Cookie', cookie)
-            .send({ name: "test" });
+            .send({ description: "test" });
         expect(response.status).toBe(201);
-        expect(response.body.name).toBe("test");
+        expect(response.body.description).toBe("test");
 
-        const item = await Item.findOne({ name: "test" });
+        const item = await Item.findOne({ description: "test" });
         expect(item).not.toBeNull();
         expect(`${item._id}`).toBe(response.body._id);
         expect(`${item.owner}`).toBe(user._id);
@@ -122,10 +122,7 @@ describe("PATCH /api/profile/items/:id", () => {
     var itemId;
 
     beforeAll(async () => {
-        const item = await new Item({
-            owner: user._id,
-            name: "test"
-        }).save();
+        const item = await newItem(user);
         itemId = item._id;
     });
 
@@ -140,11 +137,11 @@ describe("PATCH /api/profile/items/:id", () => {
         let response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
             .set('Cookie', cookie)
-            .send({ name: "test2", tags: ["test"] });
+            .send({ description: "test2", tags: ["test"] });
         expect(response.status).toBe(204);
 
         const updatedItem = await Item.findOne({ _id: itemId });
-        expect(updatedItem.name).toBe("test2");
+        expect(updatedItem.description).toBe("test2");
         expect(updatedItem.tags).toEqual(["test"]);
     });
 });
@@ -152,10 +149,7 @@ describe("PATCH /api/profile/items/:id", () => {
 describe("DELETE /api/profile/items/:id", () => {
     var itemId;
     beforeAll(async () => {
-        const item = await new Item({
-            owner: user._id,
-            name: "test"
-        }).save();
+        const item = await newItem(user);
         itemId = item._id;
     });
 

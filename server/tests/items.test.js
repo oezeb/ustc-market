@@ -44,8 +44,8 @@ describe("GET /api/items", () => {
     const user1 = { username: "test1", password: "test1" };
     const user2 = { username: "test2", password: "test2" };
     
-    const user1Item = { name: "test1's item", price: 1, tags: ["tag1", "tag2"], description: "test1's item description" };
-    const user2Item = { name: "test2's item", price: 2, tags: ["tag2", "tag3"], description: "test2's item description" };
+    const user1Item = { price: 1, tags: ["tag1", "tag2"], description: "test1's item description" };
+    const user2Item = { price: 2, tags: ["tag2", "tag3"], description: "test2's item description" };
     
     beforeAll(async () => {
         let model;
@@ -65,7 +65,7 @@ describe("GET /api/items", () => {
     });
       
     afterAll(async () => {
-        await User.deleteMany({});
+        await User.deleteMany({ _id: { $ne: user._id } });
         await Item.deleteMany({});
     });
 
@@ -77,15 +77,6 @@ describe("GET /api/items", () => {
     it("filter by owner", async () => {
         let response = await request(app)
             .get(`/api/items?owner=${user1._id}`)
-            .set('Cookie', cookie);
-        expect(response.status).toBe(200);
-        expect(response.body.length).toBe(1);
-        expect(response.body[0]._id).toBe(user1Item._id);
-    });
-
-    it("filter by name", async () => {
-        let response = await request(app)
-            .get(`/api/items?name=${user1Item.name}`)
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
@@ -171,11 +162,11 @@ describe("GET /api/items", () => {
 
     it("limit, offset and fields filtering", async () => {
         let response = await request(app)
-            .get("/api/items?offset=1&limit=1&fields=name,price")
+            .get("/api/items?offset=1&limit=1&fields=description,price")
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
-        expect(new Set(Object.keys(response.body[0]))).toEqual(new Set(["_id", "name", "price"]));
+        expect(new Set(Object.keys(response.body[0]))).toEqual(new Set(["_id", "description", "price"]));
     });
 
     it("GET /api/items/:id", async () => {

@@ -6,19 +6,18 @@ const itemSchema = new mongoose.Schema({
         required: true,
         ref: 'User' 
     },
-    name: {
+    description: {
         type: String,
         required: true,
         trim: true,
         minlength: 3
     },
     price: { type: Number },
-    description: { type: String },
     images: { type: Array },
     tags: { type: Array },    
 }, { timestamps: true });
 
-itemSchema.index({ name: 'text', description: 'text', tags: 'text' });
+itemSchema.index({ description: 'text', tags: 'text' });
 
 const Item = mongoose.model('Item', itemSchema);
 module.exports = Item;

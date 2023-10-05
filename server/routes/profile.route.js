@@ -58,7 +58,6 @@ router.route('/items').post((req, res) => {
 router.route('/items/:id').patch((req, res) => {
     Item.findOne({ _id: req.params.id, owner: req.userId })
         .then(item => {
-            if (req.body.name) item.name = req.body.name
             if (req.body.price) item.price = req.body.price
             if (req.body.description) item.description = req.body.description
             if (req.body.images) item.images = req.body.images

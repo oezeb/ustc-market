@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const User = require('./user.model');
+const { encrypt, decrypt } = require('../middleware/encryption');
 
 const messageSchema = new mongoose.Schema({
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -16,8 +17,18 @@ messageSchema.pre('save', async function(next) {
     if (receiver.blockedUsers.includes(this.sender)) {
         this.blocked = true;
     }
+    this.content = encrypt(this.content);
 
     next();
+});
+
+messageSchema.post('find', async function(messages) {
+    for (let message of messages) 
+        message.content = decrypt(message.content);
+});
+
+messageSchema.post('findOne', async function(message) {
+    if (message) message.content = decrypt(message.content);
 });
 
 const Message = mongoose.model('Message', messageSchema);

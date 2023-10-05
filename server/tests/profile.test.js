@@ -214,7 +214,6 @@ describe("GET /api/profile/messages", () => {
         expect(response.status).toBe(200);
         expect(response.body.length).toBeGreaterThan(0);
         response.body.forEach(message => {
-            console.log(message);
             expect(`${message.item}`).toBe(`${mItem._id}`);
             if (`${message.sender}` === user._id) {
                 expect(message.content).toBe(`${user.username} to ${mUser.username}`);

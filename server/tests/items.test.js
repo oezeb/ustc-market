@@ -175,7 +175,6 @@ describe("GET /api/items", () => {
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
-        console.log(response.body);
         expect(new Set(Object.keys(response.body[0]))).toEqual(new Set(["_id", "name", "price"]));
     });
 

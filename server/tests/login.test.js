@@ -29,7 +29,6 @@ describe("POST /api/login", () => {
 
     it("should return 200 if login successful", async () => {
         const response = await request(app).post("/api/login").auth("test", "test");
-        console.log(response.body);
         expect(response.status).toBe(200);
     });
 });

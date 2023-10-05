@@ -59,7 +59,6 @@ describe("GET /api/users", () => {
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body._id).toBe(`${mUser._id}`);
-        console.log(response.body);
         const fiels = new Set(["_id", "name", "avatar"]);
         expect(Object.keys(response.body).filter((key) => !fiels.has(key)).length).toBe(0);
     });

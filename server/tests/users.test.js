@@ -38,7 +38,7 @@ afterAll(async () => {
     await mongoose.connection.close();
 });
 
-describe("GET /api/users/:id", () => {
+describe("GET /api/users", () => {
     var mUser;
     
     beforeAll(async () => {

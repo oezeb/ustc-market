@@ -27,7 +27,7 @@ router.route('/login').post((req, res) => {
 
                     const token = jwt.sign({ _id: user._id }, config.JWT_SECRET)
                     res.cookie('token', token, { httpOnly: true })
-                    res.json({ message: 'Login successful' })
+                    res.json(user)
                 })
                 .catch(err => res.status(400).json({ error: err.message }))
         })
@@ -38,7 +38,7 @@ router.route('/login').post((req, res) => {
 // Clears cookie with JWT
 router.route('/logout').post((req, res) => {
     res.clearCookie('token')
-    res.json({ message: 'Logout successful' })
+    res.status(204).json()
 })
 
 module.exports = router

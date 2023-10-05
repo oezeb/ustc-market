@@ -9,7 +9,7 @@ require("dotenv").config({ path: "./tests/.env" });
 
 const login = async (user) => {
     const response = await request(app)
-        .post("/api/login")
+        .post("/api/auth/login")
         .auth(user.username, user.password);
     expect(response.status).toBe(200);
     return response.headers['set-cookie'];

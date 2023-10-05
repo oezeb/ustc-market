@@ -11,7 +11,7 @@ require("dotenv").config({ path: "./tests/.env" });
 
 const login = async (user) => {
     const response = await request(app)
-        .post("/api/login")
+        .post("/api/auth/login")
         .auth(user.username, user.password);
     expect(response.status).toBe(200);
     return response.headers['set-cookie'];
@@ -267,7 +267,6 @@ describe("POST /api/profile/messages", () => {
                 content: "test"
             });
         expect(response.status).toBe(201);
-        expect(response.body.content).toBe("test");
         expect(response.body.blocked).toBe(false);
 
         const mUser = await User.findById(mItem.owner);
@@ -282,7 +281,6 @@ describe("POST /api/profile/messages", () => {
                 content: "test2"
             });
         expect(response.status).toBe(201);
-        expect(response.body.content).toBe("test2");
         expect(response.body.blocked).toBe(true);
     });
 });

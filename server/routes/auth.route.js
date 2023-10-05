@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 const User = require('../models/user.model')
 
-// POST request to /api/login
+// POST request to /api/auth/login
 // Uses Basic Auth to authenticate user
 // If successful, returns cookie with JWT
 router.route('/login').post((req, res) => {
@@ -32,6 +32,13 @@ router.route('/login').post((req, res) => {
                 .catch(err => res.status(400).json({ error: err.message }))
         })
         .catch(err => res.status(400).json({ error: err.message }))
+})
+
+// POST request to /api/auth/logout
+// Clears cookie with JWT
+router.route('/logout').post((req, res) => {
+    res.clearCookie('token')
+    res.json({ message: 'Logout successful' })
 })
 
 module.exports = router

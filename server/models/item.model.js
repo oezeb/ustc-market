@@ -18,5 +18,7 @@ const itemSchema = new mongoose.Schema({
     tags: { type: Array },    
 }, { timestamps: true });
 
+itemSchema.index({ name: 'text', description: 'text', tags: 'text' });
+
 const Item = mongoose.model('Item', itemSchema);
 module.exports = Item;

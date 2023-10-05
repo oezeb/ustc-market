@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const request = require("supertest");
 const bcrypt = require('bcryptjs')
 const app = require("../app");
+const config = require('../config');
 const User = require("../models/user.model");
 
 require("dotenv").config({ path: "./tests/.env" });
@@ -26,7 +27,7 @@ const user = {
 var cookie;
 
 beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(config.MONGODB_URI);
     await User.deleteMany({});
     const model = await newUser(user);
     user._id = `${model._id}`;

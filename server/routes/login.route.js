@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const config = require('../config')
 const User = require('../models/user.model')
 
 // POST request to /api/login
@@ -24,7 +25,7 @@ router.route('/login').post((req, res) => {
                         return res.status(401).json({ error: 'Password does not match' })
                     }
 
-                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET)
+                    const token = jwt.sign({ _id: user._id }, config.JWT_SECRET)
                     res.cookie('token', token, { httpOnly: true })
                     res.json({ message: 'Login successful' })
                 })

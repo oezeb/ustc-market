@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 const request = require("supertest");
 const bcrypt = require('bcryptjs')
 const app = require("../app");
+const config = require('../config');
 const User = require("../models/user.model");
 
 require("dotenv").config({ path: "./tests/.env" });
 
 beforeAll(async () => {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(config.MONGODB_URI);
 });
   
 afterAll(async () => {

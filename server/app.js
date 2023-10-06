@@ -16,4 +16,6 @@ app.use('/api/profile', profileRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
 
+app.use('/api/uploads', express.static('uploads'));
+
 module.exports = app

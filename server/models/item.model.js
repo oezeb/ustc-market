@@ -14,7 +14,8 @@ const itemSchema = new mongoose.Schema({
     },
     price: { type: Number },
     images: { type: Array },
-    tags: { type: Array },    
+    tags: { type: Array },
+    sold: { type: Boolean, default: false },
 }, { timestamps: true });
 
 itemSchema.index({ description: 'text', tags: 'text' });

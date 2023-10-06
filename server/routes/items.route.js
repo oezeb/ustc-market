@@ -13,6 +13,7 @@ router.route('/').get((req, res) => {
     if (req.query.priceMin) query.price = { $gte: req.query.priceMin }
     if (req.query.priceMax) query.price = { $lte: req.query.priceMax }
     if (req.query.tags) query.tags = { $in: req.query.tags.split(',') }
+    if (req.query.sold) query.sold = req.query.sold
     if (req.query.text) query.$text = { $search: req.query.text }
 
     const orderBy = req.query.orderBy || 'updatedAt'

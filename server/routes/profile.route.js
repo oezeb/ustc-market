@@ -6,7 +6,7 @@ const User = require('../models/user.model');
 const Item = require('../models/item.model');
 const Message = require('../models/message.model');
 const auth = require('../middleware/auth');
-const { uploadImage } = require('../middleware/upload');
+const { upload, resizeImage } = require('../middleware/image');
 router.use(auth);
 
 // GET request to /api/profile
@@ -19,28 +19,13 @@ router.route('/').get((req, res) => {
 
 // PATCH request to /api/profile
 // Updates the user (name, avatar, password)
-router.route('/').patch(uploadImage.single('avatar'), async (req, res) => {
+router.route('/').patch(upload.single('avatar'), resizeImage, (req, res) => {
     User.findById(req.userId)
         .then(async user =>  {
             if (req.body.name) user.name = req.body.name;
             if (req.file) {
-                const targetSize = 1024 * 1024 * 1; // 1 MB
-                let buffer = req.file.buffer;
-                let quality = 90;
-                while (buffer.length > targetSize && quality > 0) {
-                    buffer = await sharp(buffer)
-                        .jpeg({ quality: quality })
-                        .toBuffer();
-
-                    quality -= 10;
-                }
-
-                if (quality === 0) {
-                    return res.status(400).json({ error: 'File too large' });
-                }
-
                 const filename = `${config.avatarsDir}/${req.userId}.jpeg`
-                await sharp(buffer).toFile(filename)
+                await sharp(req.file.buffer).toFile(filename)
                 user.avatar = filename
             }
             if (req.body.password) {
@@ -61,15 +46,21 @@ router.route('/').patch(uploadImage.single('avatar'), async (req, res) => {
 
 // POST request to /api/profile/items
 // Creates a new item
-router.route('/items').post((req, res) => {
+router.route('/items').post(upload.array('images', 5), resizeImage, (req, res) => {
     const  item = new Item({
         owner: req.userId,
-        name: req.body.name,
         price: req.body.price,
         description: req.body.description,
-        images: req.body.images,
         tags: req.body.tags
     })
+
+    if (req.files) {
+        item.images = req.files.map((file, index) => {
+            const filename = `${config.itemImagesDir}/${item._id}-${index}.jpeg`;
+            sharp(file.buffer).toFile(filename);
+            return filename;
+        })
+    }
     
     item.save()
         .then(() => res.status(201).json(item))
@@ -78,13 +69,34 @@ router.route('/items').post((req, res) => {
 
 // PATCH request to /api/profile/items/:id
 // Updates the user's item with the specified id
-router.route('/items/:id').patch((req, res) => {
+router.route('/items/:id').patch(upload.array('images', 5), resizeImage, (req, res) => {
     Item.findOne({ _id: req.params.id, owner: req.userId })
         .then(item => {
             if (req.body.price) item.price = req.body.price
             if (req.body.description) item.description = req.body.description
-            if (req.body.images) item.images = req.body.images
-            if (req.body.tags) item.tags = req.body.tags
+            if (req.body.tags) {
+                if (!item.tags) item.tags = []
+                if (req.body.replaceTags) {
+                    item.tags = req.body.tags
+                } else {
+                    item.tags = [...new Set([...item.tags, ...req.body.tags])]
+                }
+            }
+            if (req.files) {
+                if (!item.images) item.images = [];
+                let images = req.files.map((file, index) => {
+                    index = item.images.length + index
+                    const filename = `${config.itemImagesDir}/${item._id}-${index}.jpeg`
+                    sharp(file.buffer).toFile(filename)
+                    return filename
+                });
+
+                if (req.body.replaceImages) {
+                    item.images = images
+                } else {
+                    item.images = [...item.images, ...images]
+                }
+            }
 
             item.save()
                 .then(() => res.status(204).json())

@@ -1,9 +1,9 @@
 const fs = require('fs');
 require('dotenv').config({ path: './.env' });
 
-const uploadsDir = './uploads';
-const avatarsDir = './uploads/avatars';
-const itemImagesDir = './uploads/item-images';
+const uploadsDir = 'uploads';
+const avatarsDir = 'uploads/avatars';
+const itemImagesDir = 'uploads/item-images';
 for (const dir of [uploadsDir, avatarsDir, itemImagesDir]) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 }

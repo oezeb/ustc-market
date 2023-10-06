@@ -1,10 +1,12 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const sharp = require('sharp');
+const config = require('../config');
 const User = require('../models/user.model');
 const Item = require('../models/item.model');
 const Message = require('../models/message.model');
 const auth = require('../middleware/auth');
-
+const { uploadImage } = require('../middleware/upload');
 router.use(auth);
 
 // GET request to /api/profile
@@ -16,10 +18,31 @@ router.route('/').get((req, res) => {
 })
 
 // PATCH request to /api/profile
-// Updates the user (password)
-router.route('/').patch((req, res) => {
+// Updates the user (name, avatar, password)
+router.route('/').patch(uploadImage.single('avatar'), async (req, res) => {
     User.findById(req.userId)
         .then(async user =>  {
+            if (req.body.name) user.name = req.body.name;
+            if (req.file) {
+                const targetSize = 1024 * 1024 * 1; // 1 MB
+                let buffer = req.file.buffer;
+                let quality = 90;
+                while (buffer.length > targetSize && quality > 0) {
+                    buffer = await sharp(buffer)
+                        .jpeg({ quality: quality })
+                        .toBuffer();
+
+                    quality -= 10;
+                }
+
+                if (quality === 0) {
+                    return res.status(400).json({ error: 'File too large' });
+                }
+
+                const filename = `${config.avatarsDir}/${req.userId}.jpeg`
+                await sharp(buffer).toFile(filename)
+                user.avatar = filename
+            }
             if (req.body.password) {
                 try {
                     const hash = await bcrypt.hash(req.body.password, 10)

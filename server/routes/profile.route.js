@@ -51,7 +51,7 @@ router.route('/items').post(upload.array('images', 5), resizeImage, (req, res) =
         owner: req.userId,
         price: req.body.price,
         description: req.body.description,
-        tags: req.body.tags
+        tags: [...new Set(req.body.tags || [])] // Remove duplicates
     })
 
     if (req.files) {
@@ -75,6 +75,7 @@ router.route('/items/:id').patch(upload.array('images', 5), resizeImage, (req, r
             if (req.body.price) item.price = req.body.price
             if (req.body.description) item.description = req.body.description
             if (req.body.tags) {
+                req.body.tags = [...new Set(req.body.tags)] // Remove duplicates
                 if (!item.tags) item.tags = []
                 if (req.body.replaceTags) {
                     item.tags = req.body.tags

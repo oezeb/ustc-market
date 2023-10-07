@@ -107,9 +107,10 @@ describe("POST /api/profile/items", () => {
         let response = await request(app)
             .post("/api/profile/items")
             .set('Cookie', cookie)
-            .send({ description: "test" });
+            .send({ description: "test", tags: ["test", "test"] });
         expect(response.status).toBe(201);
         expect(response.body.description).toBe("test");
+        expect(response.body.tags).toEqual(["test"]);
 
         const item = await Item.findOne({ description: "test" });
         expect(item).not.toBeNull();
@@ -137,7 +138,7 @@ describe("PATCH /api/profile/items/:id", () => {
         let response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
             .set('Cookie', cookie)
-            .send({ description: "test2", tags: ["test"] });
+            .send({ description: "test2", tags: ["test", "test"] });
         expect(response.status).toBe(204);
 
         const updatedItem = await Item.findOne({ _id: itemId });

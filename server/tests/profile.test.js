@@ -6,6 +6,7 @@ const config = require('../config');
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
+const fs = require("fs");
 
 require("dotenv").config({ path: "./tests/.env" });
 
@@ -39,6 +40,7 @@ const user = {
     password: "test"
 }
 var cookie;
+const tuxPath = './tests/tux.svg.png';
 
 beforeAll(async () => {
     await mongoose.connect(config.MONGODB_URI);
@@ -83,8 +85,16 @@ describe("PATCH /api/profile", () => {
         let response = await request(app)
             .patch("/api/profile")
             .set('Cookie', cookie)
-            .send({ password: newpassword });
+            .attach('avatar', tuxPath)
+            .field('name', 'test')
+            .field('password', newpassword);
+        console.log(response.body);
         expect(response.status).toBe(204);
+        const mUser = await User.findById(user._id)
+        expect(mUser.name).toBe('test');
+        expect(mUser.avatar).toBe(`${config.avatarsDir}/${user._id}.jpeg`);
+        expect(fs.existsSync(mUser.avatar)).toBe(true);
+        fs.unlinkSync(mUser.avatar);
 
         user.password = newpassword;
         cookie = await login(user);
@@ -107,14 +117,19 @@ describe("POST /api/profile/items", () => {
         let response = await request(app)
             .post("/api/profile/items")
             .set('Cookie', cookie)
-            .send({ description: "test", tags: ["test", "test"] });
+            .attach('images', tuxPath)
+            .attach('images', tuxPath)
+            .field('description', 'test')
+            .field('tags', JSON.stringify(["test", "test"]));
         expect(response.status).toBe(201);
-        expect(response.body.description).toBe("test");
         expect(response.body.tags).toEqual(["test"]);
+        expect(response.body.images.length).toBe(2);
+        response.body.images.forEach(image => {
+            expect(fs.existsSync(image)).toBe(true);
+            fs.unlinkSync(image);
+        });
 
-        const item = await Item.findOne({ description: "test" });
-        expect(item).not.toBeNull();
-        expect(`${item._id}`).toBe(response.body._id);
+        const item = await Item.findById(response.body._id);
         expect(`${item.owner}`).toBe(user._id);
     });
 });
@@ -138,12 +153,45 @@ describe("PATCH /api/profile/items/:id", () => {
         let response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
             .set('Cookie', cookie)
-            .send({ description: "test2", tags: ["test", "test"] });
+            .attach('images', tuxPath)
+            .field('description', 'test2')
+            .field('tags', JSON.stringify(["test", "test"]));
         expect(response.status).toBe(204);
 
-        const updatedItem = await Item.findOne({ _id: itemId });
-        expect(updatedItem.description).toBe("test2");
+        let updatedItem = await Item.findById(itemId);
         expect(updatedItem.tags).toEqual(["test"]);
+        expect(updatedItem.images.length).toBe(1);
+        expect(fs.existsSync(updatedItem.images[0])).toBe(true);
+
+        response = await request(app)
+            .patch(`/api/profile/items/${itemId}`)
+            .set('Cookie', cookie)
+            .attach('images', tuxPath)
+            .field('replaceTags', true)
+            .field('tags', JSON.stringify(["test2"]));
+        expect(response.status).toBe(204);
+
+        updatedItem = await Item.findById(itemId);
+        expect(updatedItem.tags).toEqual(["test2"]);
+        expect(updatedItem.images.length).toBe(2);
+        updatedItem.images.forEach(image => {
+            expect(fs.existsSync(image)).toBe(true);
+            fs.unlinkSync(image);
+        });
+
+        response = await request(app)
+            .patch(`/api/profile/items/${itemId}`)
+            .set('Cookie', cookie)
+            .attach('images', tuxPath)
+            .field('replaceImages', true)
+            .field('tags', JSON.stringify(["test3"]));
+        expect(response.status).toBe(204);
+
+        updatedItem = await Item.findById(itemId);
+        expect(new Set(updatedItem.tags)).toEqual(new Set(["test2", "test3"]));
+        expect(updatedItem.images.length).toBe(1);
+        expect(fs.existsSync(updatedItem.images[0])).toBe(true);
+        fs.unlinkSync(updatedItem.images[0]);
     });
 });
 

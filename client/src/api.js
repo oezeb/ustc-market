@@ -5,6 +5,7 @@ export const apiRoutes = {
 
     // items
     items: "/api/items",
+    tags: "/api/items/tags",
 
     // profile
     profile: "/api/profile",

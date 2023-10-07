@@ -5,6 +5,7 @@ import Home from "./Home";
 import Layout from "./Layout";
 import Login from "./Login";
 import Profile from "./Profile";
+import AddItem from "./AddItem";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="/messages" element={<div>Messages</div>} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/add" element={<div>Add</div>} />
+                <Route path="/add" element={<AddItem />} />
             </Route>
             <Route path="/login" element={<Login />} />
         </Routes>

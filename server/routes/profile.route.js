@@ -47,11 +47,18 @@ router.route('/').patch(upload.single('avatar'), resizeImage, (req, res) => {
 // POST request to /api/profile/items
 // Creates a new item
 router.route('/items').post(upload.array('images', 5), resizeImage, (req, res) => {
+    if (req.body.tags) {
+        // convert tags to array if it's a json string
+        if (typeof req.body.tags === 'string')
+            req.body.tags = JSON.parse(req.body.tags)
+        req.body.tags = [...new Set(req.body.tags || [])] // Remove duplicates
+    }
+
     const  item = new Item({
         owner: req.userId,
         price: req.body.price,
         description: req.body.description,
-        tags: [...new Set(req.body.tags || [])] // Remove duplicates
+        tags: req.body.tags
     })
 
     if (req.files) {
@@ -70,12 +77,18 @@ router.route('/items').post(upload.array('images', 5), resizeImage, (req, res) =
 // PATCH request to /api/profile/items/:id
 // Updates the user's item with the specified id
 router.route('/items/:id').patch(upload.array('images', 5), resizeImage, (req, res) => {
+    if (req.body.tags) {
+        // convert tags to array if it's a json string
+        if (typeof req.body.tags === 'string')
+            req.body.tags = JSON.parse(req.body.tags)
+        req.body.tags = [...new Set(req.body.tags || [])] // Remove duplicates
+    }
+
     Item.findOne({ _id: req.params.id, owner: req.userId })
         .then(item => {
             if (req.body.price) item.price = req.body.price
             if (req.body.description) item.description = req.body.description
             if (req.body.tags) {
-                req.body.tags = [...new Set(req.body.tags)] // Remove duplicates
                 if (!item.tags) item.tags = []
                 if (req.body.replaceTags) {
                     item.tags = req.body.tags

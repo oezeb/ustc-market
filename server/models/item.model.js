@@ -10,15 +10,14 @@ const itemSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        minlength: 3
+        minlength: 3,
+        index: true
     },
     price: { type: Number },
-    images: { type: Array },
-    tags: { type: Array },
+    images: { type: [String] },
+    tags: { type: [String], index: true },
     sold: { type: Boolean, default: false },
 }, { timestamps: true });
-
-itemSchema.index({ description: 'text', tags: 'text' });
 
 const Item = mongoose.model('Item', itemSchema);
 module.exports = Item;

@@ -30,6 +30,26 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json({ error: err.message }))
 });
 
+// GET request to /api/items/tags
+// Returns item tags with counts
+router.route('/tags').get((req, res) => {
+    const offset = parseInt(req.query.offset) || 0
+    const limit = parseInt(req.query.limit) || undefined
+
+    const pipeline = [
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $skip: offset },
+    ]
+    if (limit) pipeline.push({ $limit: limit })
+    
+    Item.aggregate(pipeline)
+        .then(tags => tags.map(tag => ({ tag: tag._id, count: tag.count })))
+        .then(tags => res.json(tags))
+        .catch(err => res.status(400).json({ error: err.message }))
+});
+
 // GET request to /api/items/:id
 // Returns an item
 router.route('/:id').get((req, res) => {

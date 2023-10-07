@@ -177,3 +177,39 @@ describe("GET /api/items", () => {
         expect(response.body._id).toBe(user1Item._id);
     });
 });
+
+describe("GET /api/items/tags", () => {
+    const item1 = { description: "test1", tags: ["tag1", "tag3"] };
+    const item2 = { description: "test2", tags: ["tag2", "tag3"] };
+    const item3 = { description: "test3", tags: ["tag2", "tag3"] };
+
+    beforeAll(async () => {
+        for (let item of [item1, item2, item3]) {
+            item.owner = user._id;
+            await new Item(item).save();
+        }
+    });
+
+    afterAll(async () => {
+        await Item.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        let response = await request(app).get(`/api/items/tags`);
+        expect(response.status).toBe(401);
+    });
+
+    it("should return tags with counts", async () => {
+        let response = await request(app)
+            .get(`/api/items/tags`)
+            .set('Cookie', cookie);
+        console.log(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(3);
+        expect(response.body[0].tag).toBe("tag3");
+        expect(response.body[0].count).toBe(3);
+        expect(response.body[1].tag).toBe("tag2");
+        expect(response.body[1].count).toBe(2);
+        expect(response.body[2].tag).toBe("tag1");
+    });
+});

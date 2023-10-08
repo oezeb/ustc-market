@@ -1,9 +1,12 @@
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ForumIcon from '@mui/icons-material/Forum';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import SearchIcon from '@mui/icons-material/Search';
+import { InputBase, Paper, Skeleton } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -15,6 +18,7 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import ListItem from '@mui/material/ListItem';
+import Pagination from '@mui/material/Pagination';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useTheme from '@mui/material/styles/useTheme';
@@ -22,10 +26,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import React from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-
-import SearchIcon from '@mui/icons-material/Search';
-import { InputBase, Paper, Skeleton } from '@mui/material';
-import Pagination from '@mui/material/Pagination';
 import { useAuth } from '../AuthProvider';
 import { apiRoutes } from "../api";
 
@@ -361,6 +361,17 @@ function ItemDetails(props) {
                     Last updated {lastUpdatedText(item.updatedAt)}
                 </Typography>
             </Box>
+            {user._id === item.owner &&
+            <Box component={Link} to={`/items/${item._id}/edit`}
+                sx={{ 
+                    mx: 1, px: 1,
+                    backgroundColor: 'grey.200',
+                    borderRadius: 5, overflow: 'hidden',
+                    width: 'fit-content',
+                }}>
+                <BorderColorIcon fontSize='inherit' sx={{ mr: 0.5 }} /> 
+                Edit item
+            </Box>}
             <Box sx={{ p: 1 }}>
                 <Typography variant='body2' color='text.secondary'>
                     {item.description}

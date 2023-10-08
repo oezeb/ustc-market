@@ -11,6 +11,7 @@ for (const dir of [uploadsDir, avatarsDir, itemImagesDir]) {
 module.exports = {
     // Environment variables
     MONGODB_URI: process.env.MONGODB_URI,
+    MONDODB_TEST_URI: process.env.MONDODB_TEST_URI,
     PORT: process.env.PORT,
     JWT_SECRET: process.env.JWT_SECRET,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,

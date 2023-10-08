@@ -151,6 +151,25 @@ router.route('/messages').get((req, res) => {
         .catch(err => res.status(400).json({ error: err.message }))
 })
 
+// GET request to /api/profile/messages/count
+// Returns the user's message count
+router.route('/messages/count').get((req, res) => {
+    const query = { 
+        $or: [{ sender: req.userId }, { receiver: req.userId }],
+        blocked: false 
+    }
+
+    if (req.query.otherUser) {
+        query.$or[0].receiver = req.query.otherUser
+        query.$or[1].sender = req.query.otherUser
+    }
+    if (req.query.item) query.item = req.query.item
+
+    Message.countDocuments(query)
+        .then(count => res.json(count))
+        .catch(err => res.status(400).json({ error: err.message }))
+})
+
 // GET request to /api/profile/messages/:id
 // Returns the user's message with the specified id
 router.route('/messages/:id').get((req, res) => {

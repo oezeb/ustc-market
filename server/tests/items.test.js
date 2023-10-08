@@ -28,15 +28,14 @@ const user = {
 var cookie;
 
 beforeAll(async () => {
-    await mongoose.connect(config.MONGODB_URI);
-    await User.deleteMany({});
+    await mongoose.connect(config.MONDODB_TEST_URI);
     const model = await newUser(user);
     user._id = `${model._id}`;
     cookie = await login(user);
 });
   
 afterAll(async () => {
-    await User.deleteMany({});
+    await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
 });
 
@@ -178,6 +177,32 @@ describe("GET /api/items", () => {
     });
 });
 
+describe("GET /api/items/count", () => {
+    afterAll(async () => {
+        await Item.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        let response = await request(app).get(`/api/items/count`);
+        expect(response.status).toBe(401);
+    });
+
+    it("should return item count", async () => {
+        let response = await request(app)
+            .get(`/api/items/count`)
+            .set('Cookie', cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toBe(0);
+
+        await new Item({ owner: user._id, description: "test" }).save();
+        response = await request(app)
+            .get(`/api/items/count`)
+            .set('Cookie', cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toBe(1);
+    });
+});
+
 describe("GET /api/items/tags", () => {
     const item1 = { description: "test1", tags: ["tag1", "tag3"] };
     const item2 = { description: "test2", tags: ["tag2", "tag3"] };
@@ -203,7 +228,6 @@ describe("GET /api/items/tags", () => {
         let response = await request(app)
             .get(`/api/items/tags`)
             .set('Cookie', cookie);
-        console.log(response.body);
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(3);
         expect(response.body[0].tag).toBe("tag3");

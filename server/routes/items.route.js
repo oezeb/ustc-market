@@ -30,6 +30,23 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json({ error: err.message }))
 });
 
+// GET request to /api/items/count
+// Returns item count
+router.route('/count').get((req, res) => {
+    const query = {}
+    if (req.query.owner) query.owner = req.query.owner
+    if (req.query.price) query.price = req.query.price
+    if (req.query.priceMin) query.price = { $gte: req.query.priceMin }
+    if (req.query.priceMax) query.price = { $lte: req.query.priceMax }
+    if (req.query.tags) query.tags = { $in: req.query.tags.split(',') }
+    if (req.query.sold) query.sold = req.query.sold
+    if (req.query.text) query.$text = { $search: req.query.text }
+
+    Item.countDocuments(query)
+        .then(count => res.json(count))
+        .catch(err => res.status(400).json({ error: err.message }))
+});
+
 // GET request to /api/items/tags
 // Returns item tags with counts
 router.route('/tags').get((req, res) => {

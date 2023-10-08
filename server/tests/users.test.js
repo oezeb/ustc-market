@@ -27,7 +27,7 @@ const user = {
 var cookie;
 
 beforeAll(async () => {
-    await mongoose.connect(config.MONGODB_URI);
+    await mongoose.connect(config.MONDODB_TEST_URI);
     await User.deleteMany({});
     const model = await newUser(user);
     user._id = `${model._id}`;
@@ -35,7 +35,7 @@ beforeAll(async () => {
 });
   
 afterAll(async () => {
-    await User.deleteMany({});
+    await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
 });
 

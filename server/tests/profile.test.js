@@ -43,15 +43,14 @@ var cookie;
 const tuxPath = './tests/tux.svg.png';
 
 beforeAll(async () => {
-    await mongoose.connect(config.MONGODB_URI);
-    await User.deleteMany({});
+    await mongoose.connect(config.MONDODB_TEST_URI);
     const model = await newUser(user);
     user._id = `${model._id}`;
     cookie = await login(user);
 });
   
 afterAll(async () => {
-    await User.deleteMany({});
+    await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
 });
 
@@ -88,7 +87,6 @@ describe("PATCH /api/profile", () => {
             .attach('avatar', tuxPath)
             .field('name', 'test')
             .field('password', newpassword);
-        console.log(response.body);
         expect(response.status).toBe(204);
         const mUser = await User.findById(user._id)
         expect(mUser.name).toBe('test');
@@ -279,6 +277,40 @@ describe("GET /api/profile/messages", () => {
             .set('Cookie', cookie);
         expect(response.status).toBe(200);
         expect(response.body.content).toBe(message.content);
+    });
+});
+
+describe("GET /api/profile/messages/count", () => {
+    var item;
+    beforeAll(async () => {
+        item = await newItem(user);
+    });
+
+    afterAll(async () => {
+        Item.deleteMany({});
+        Message.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        const response = await request(app).get("/api/profile/messages/count");
+        expect(response.status).toBe(401);
+    });
+
+    it("should return 200 if logged in", async () => {
+        let response = await request(app)
+            .get("/api/profile/messages/count")
+            .query({ item: `${item._id}` })
+            .set('Cookie', cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toBe(0);
+
+        await newMessage(user, user, item);
+        response = await request(app)
+            .get("/api/profile/messages/count")
+            .query({ item: `${item._id}` })
+            .set('Cookie', cookie);
+        expect(response.status).toBe(200);
+        expect(response.body).toBe(1);
     });
 });
 

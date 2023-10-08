@@ -11,11 +11,11 @@ const itemSchema = new mongoose.Schema({
         required: true,
         trim: true,
         minlength: 3,
-        index: true
+        index: { text: true }
     },
     price: { type: Number },
     images: { type: [String] },
-    tags: { type: [String], index: true },
+    tags: { type: [String], index: { text: true } },
     sold: { type: Boolean, default: false },
 }, { timestamps: true });
 

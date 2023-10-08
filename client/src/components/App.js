@@ -17,7 +17,7 @@ function App() {
                 <Route path="/messages" element={<div>Messages</div>} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/items/:id?" element={<Items />} />
-                <Route path="/add" element={<AddItem />} />
+                <Route path="/items/add" element={<AddItem />} />
             </Route>
             <Route path="/login" element={<Login />} />
         </Routes>

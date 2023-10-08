@@ -68,8 +68,8 @@ function Layout() {
                         icon={<HomeIcon />} />
                     <BottomNavigationAction 
                         component={Link}
-                        to='/add'
-                        value='/add'
+                        to='/items/add'
+                        value='/items/add'
                         label="Add"
                         icon={<AddIcon />} />
                     <BottomNavigationAction 

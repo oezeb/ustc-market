@@ -1,13 +1,10 @@
-import React from 'react';
-import { 
-    Button, 
-    TextField,
-    Typography,
-    Box,
-    CircularProgress,
-} from "@mui/material";
-import { useNavigate } from 'react-router-dom';
-
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../AuthProvider";
 
@@ -15,7 +12,6 @@ const Login = () => {
     const auth = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -30,19 +26,21 @@ const Login = () => {
     };
 
     return (
-        <Box sx={{
-            width: "100%",
-            height: "100vh",
-            display: "flex",
-            flexDirection: 'column',
-            justifyContent: "center",
-            alignItems: "center",
-        }}>
+        <Box
+            sx={{
+                width: "100%",
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
             <Typography variant="h4" component="h1" gutterBottom>
                 Login
             </Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                <TextField 
+                <TextField
                     id="username"
                     name="username"
                     inputProps={{ minLength: 1, pattern: "[a-zA-Z0-9_]+" }}
@@ -52,7 +50,7 @@ const Login = () => {
                     label="Username"
                     autoFocus
                 />
-                <TextField 
+                <TextField
                     id="password"
                     name="password"
                     type="password"
@@ -62,9 +60,9 @@ const Login = () => {
                     required
                     label="Password"
                 />
-                <Button 
-                    type="submit" 
-                    fullWidth 
+                <Button
+                    type="submit"
+                    fullWidth
                     variant="contained"
                     disabled={loading}
                     sx={{ mt: 3, mb: 2 }}

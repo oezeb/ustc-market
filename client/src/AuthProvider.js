@@ -1,8 +1,8 @@
-import React from 'react';
-import { LinearProgress } from '@mui/material';
-import { Navigate } from 'react-router-dom';
-const log = require('loglevel');
-const { apiRoutes } = require('./api');
+import React from "react";
+import { LinearProgress } from "@mui/material";
+import { Navigate } from "react-router-dom";
+const log = require("loglevel");
+const { apiRoutes } = require("./api");
 
 const AuthContext = React.createContext();
 
@@ -14,15 +14,19 @@ function AuthProvider(props) {
         let user = null;
         try {
             response = await fetch(apiRoutes.login, {
-                method: 'POST',
-                headers: { "Authorization": `Basic ${btoa(`${username}:${password}`)}` },
+                method: "POST",
+                headers: {
+                    Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+                },
             });
-            
+
             if (response.ok) {
                 response = await fetch(apiRoutes.profile);
                 user = await response.json();
             }
-        } catch (error) { log.error(error); }
+        } catch (error) {
+            log.error(error);
+        }
 
         setUser(user);
         return user;
@@ -30,7 +34,7 @@ function AuthProvider(props) {
 
     const logout = async () => {
         const response = await fetch(apiRoutes.logout, {
-            method: 'POST',
+            method: "POST",
         });
 
         if (response.ok) {
@@ -39,13 +43,13 @@ function AuthProvider(props) {
     };
 
     React.useEffect(() => {
-        if(user === undefined) {
+        if (user === undefined) {
             fetch(apiRoutes.profile)
-                .then(response => response.ok ? response.json() : null)
-                .then(user => {
+                .then((response) => (response.ok ? response.json() : null))
+                .then((user) => {
                     setUser(user);
                 })
-                .catch(error => {
+                .catch((error) => {
                     log.error(error);
                     setUser(null);
                 });
@@ -59,7 +63,7 @@ function AuthProvider(props) {
     );
 }
 
-export function useAuth() { 
+export function useAuth() {
     return React.useContext(AuthContext);
 }
 

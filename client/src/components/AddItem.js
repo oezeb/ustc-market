@@ -15,12 +15,14 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import React from "react";
 import { apiRoutes } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function AddItem() {
     const [images, setImages] = React.useState([]);
     const [tags, setTags] = React.useState([]);
+    const navigate = useNavigate();
 
     const tagsLimit = 15
     React.useEffect(() => {
@@ -58,7 +60,7 @@ function AddItem() {
             body: formData
         })
             .then(res => res.json())
-            .then(data => console.log(data))
+            .then(data => navigate('/items/' + data._id))
             .catch(err => console.error(err))
     };
 

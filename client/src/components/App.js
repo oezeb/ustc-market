@@ -6,6 +6,7 @@ import Layout from "./Layout";
 import Login from "./Login";
 import Profile from "./Profile";
 import AddItem from "./AddItem";
+import Items from "./Items";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="/messages" element={<div>Messages</div>} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/items/:id?" element={<Items />} />
                 <Route path="/add" element={<AddItem />} />
             </Route>
             <Route path="/login" element={<Login />} />

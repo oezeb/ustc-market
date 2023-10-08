@@ -26,7 +26,7 @@ function AddItem() {
 
     const tagsLimit = 15
     React.useEffect(() => {
-        fetch(apiRoutes.tags + `?limit=${tagsLimit}`)
+        fetch(apiRoutes.itemTags + `?limit=${tagsLimit}`)
             .then(res => res.json())
             .then(tags => tags.map(tag => tag.tag))
             .then(tags => setTags(tags))

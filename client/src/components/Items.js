@@ -3,6 +3,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ForumIcon from '@mui/icons-material/Forum';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -10,32 +11,273 @@ import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
 import ListItem from '@mui/material/ListItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
+
+import SearchIcon from '@mui/icons-material/Search';
+import { InputBase, Paper, Skeleton } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
+import { useAuth } from '../AuthProvider';
 import { apiRoutes } from "../api";
-import { Skeleton } from '@mui/material';
 
 function Items() {
     const { id } = useParams();
     return id ? <ItemDetails id={id} /> : <ItemsList />;
 }
 
+// ============================================================================
+// ItemsList
+// ============================================================================
+
 function ItemsList() {
-    return (
-        <div>
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate(); 
+    const [items, setItems] = React.useState(undefined)
+    const [itemCount, setItemCount] = React.useState(undefined)
+    const [page, setPage] = React.useState(1)
+
+    const q = searchParams.get('q')
+    const tagsQuery = searchParams.get('tags')
+
+    const itemsperPage = 10;
+
+    React.useEffect(() => {
+        const query = new URLSearchParams()
+        if (q) query.append('text', q)
+        if (tagsQuery) query.append('tags', tagsQuery)
+
+        const queryText = query.size > 0 ? '?' + query.toString() : ''
+        fetch(apiRoutes.itemCount + queryText)
+            .then(res => res.json())
+            .then(count => {
+                setItemCount(count)
+
+                const offset = (page - 1) * itemsperPage
+                if (offset >= count) setItems([])
+                else {
+                    query.append('limit', itemsperPage)
+                    query.append('offset', offset)
+
+                    fetch(apiRoutes.items + '?' + query.toString())
+                        .then(res => res.json())
+                        .then(items => setItems(items))
+                }
+            })
+            .catch(err => {
+                console.error(err)
+                setItemCount(0)
+                setItems(null)
+            })
+    }, [page, q, tagsQuery])
+
+    const onSearchSubmit = (value) => {
+        let tagMatch = value.match(/#\w+/g)
+        let tags = []
+        if (tagMatch) {
+            tags = tagMatch.map(tag => tag.slice(1))
+            value = value.replace(/#\w+/g, '').trim()
+        }
+
+        const query = new URLSearchParams()
+        if (value) query.append('q', value)
+        if (tags.length > 0) query.append('tags', tags.join(','))
+
+        navigate({ search: '?' + query.toString() })
+    }
+
+    const defaultSeach = () => {
+        let value = []
+        if (q) value.push(q)
+        if (tagsQuery) 
+            value.push(tagsQuery.split(',').map(tag => '#' + tag).join(' '))
+        return value.join(' ')
+    }
+
+
+    if (items) return (
+        <Box display='flex' flexDirection='column'>
+            <Box position='sticky' top={0} zIndex={1}>
+                <Toolbar />
+                <SearchBar onSubmit={onSearchSubmit} defaultValue={defaultSeach()} />
+            </Box>
+            <ItemImageList items={items} />
+            <Pagination
+                sx={{ alignSelf: 'center' }}
+                count={Math.ceil(itemCount / itemsperPage)}
+                page={page}
+                onChange={(event, value) => setPage(value)} />
             <Toolbar />
-            <h1>Profile Items</h1>
-        </div>
-    );
+        </Box>
+    )
+    else if (items === undefined) return (
+        <Box display='flex' flexDirection='column' height={`calc(100vh - 20px)`}>
+            <Box position='sticky' top={0} zIndex={1} p={1}>
+                <Toolbar />
+                <Box sx={{ borderRadius: 5, overflow: 'hidden' }}>
+                    <Skeleton variant='rectangular' height={30} />
+                </Box>
+                <Skeleton />
+            </Box>
+            <Box><ItemImageList /></Box>
+            <Pagination sx={{ alignSelf: 'center' }} />
+            <Toolbar />
+        </Box>
+    )
+    else return (
+        <Box>
+            <Toolbar />
+            <Box sx={{ p: 1 }}><SearchBar /></Box>
+            <Typography variant='h4' color='text.secondary' align='center'>
+                Items not found
+            </Typography>
+            <Toolbar />
+        </Box>
+    )
 }
 
+const SearchBar = (props) => {
+    const { onSubmit, defaultValue } = props
+    const [value, setValue] = React.useState(defaultValue || '')
+    const [tags, setTags] = React.useState(undefined)
+    const [tagsExpanded, setTagsExpanded] = React.useState(false)
+
+    const onSearchChange = (event) => setValue(event.target.value)
+
+    const onSearchSubmit = (event) => {
+        event.preventDefault()
+        if (onSubmit) onSubmit(value)
+    }
+
+    const onTagClick = (tag) => {
+        tag = `#${tag}`
+        if (!value.includes(tag)) setValue(value + tag)
+    }
+
+    React.useEffect(() => {
+        fetch(apiRoutes.itemTags + '?limit=10')
+            .then(res => res.json())
+            .then(tags => setTags(tags))
+            .catch(err => {
+                console.error(err)
+                setTags(null)
+            })
+    }, [])
+
+    return (
+        <Box sx={{ p: 1 }}>
+            <Paper elevation={5} component='form' onSubmit={onSearchSubmit}
+                sx={{ display: 'flex', borderRadius: 5 }}>
+                <IconButton sx={{ pl: 1 }} size='small' aria-label="search">
+                    <SearchIcon fontSize='small' />
+                </IconButton>
+                <InputBase
+                    placeholder="Search..."
+                    inputProps={{ 'aria-label': 'search' }}
+                    fullWidth
+                    onChange={onSearchChange}
+                    value={value} />
+                <input type="submit" hidden />
+            </Paper>
+            {tags && tags.length > 0 &&
+            <ListItem dense disablePadding sx={{ p: 1}}>
+                <Box sx={{ flexGrow: 1 }} />
+                <Collapse in={tagsExpanded} timeout="auto" collapsedSize='24px'>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {tags.map((tag, index) => (
+                            <Chip key={index}
+                                onClick={() => {onTagClick(tag.tag)}}
+                                sx={{
+                                    color: 'inherit', textDecoration: 'inherit',
+                                    mr: 1, mb: 1
+                                }}
+                                size="small"
+                                label={'#' + tag.tag} />
+                        ))}
+                    </Box>
+                </Collapse>
+                <IconButton sx={{ p: 0}} 
+                    onClick={() => setTagsExpanded(prev => !prev)}>
+                    {tagsExpanded ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
+            </ListItem>}
+        </Box>
+    )
+}
+
+const ItemImageList = (props) => {
+    const { items } = props
+    const itemsPerRow = Math.floor(window.innerWidth / 200)
+
+    if (items) return (
+        <ImageList variant="masonry" gap={8} cols={itemsPerRow}>
+            {items.map((item, index) => (
+                <ImageListItem key={index} 
+                    component={Link} to={`/items/${item._id}`}
+                    sx={{ color: 'inherit', textDecoration: 'inherit' }}>
+                    {item.images && item.images.length > 0 ?
+                    <img src={`/api/${item.images[0]}`}
+                        style={{ borderRadius: '10px', overflow: 'hidden' }}
+                        loading="lazy" alt='item' /> :
+                    <Box 
+                        sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center', 
+                            width: '100%', height: 200,
+                            backgroundColor: 'grey.200',
+                            borderRadius: '10px', overflow: 'hidden'
+                        }}>
+                            <QuestionMarkIcon fontSize='large' />
+                    </Box>}
+                    <ImageListItemBar
+                        position="below"
+                        title={item.description}
+                        subtitle={<><Typography component='span' variant='body2' color='error'>
+                            ¥
+                        </Typography>
+                        <Typography component='span' variant='h6'  color='error'>
+                            {item.price? item.price:"0"}
+                        </Typography></>}
+                    />
+                </ImageListItem>
+            ))}
+        </ImageList>
+    )
+    else if (items === undefined) return (
+        <ImageList variant="masonry" gap={8} cols={itemsPerRow}>
+            {Array.from({ length: 4 }).map((_, index) => (
+                <ImageListItem key={index} 
+                    sx={{ color: 'inherit', textDecoration: 'inherit' }}>
+                    <Box sx={{ borderRadius: '10px', overflow: 'hidden' }}>
+                        <Skeleton variant='rectangular' height={150} />
+                    </Box>
+                    <ImageListItemBar
+                        position="below"
+                        title={<Skeleton />}
+                        subtitle={<Skeleton />}
+                    />
+                </ImageListItem>
+            ))}
+        </ImageList>
+    )
+    else return null
+}
+
+// ============================================================================
+// ItemDetails
+// ============================================================================
+
 function ItemDetails(props) {
+    const { user } = useAuth()
     const [item, setItem] = React.useState(undefined)
     const [owner, setOwner] = React.useState(undefined)
     const [tagsExpanded, setTagsExpanded] = React.useState(false)
@@ -62,22 +304,24 @@ function ItemDetails(props) {
         }
     }, [item])
 
-    const UserProfile = (props) => {
-        const { user } = props
-        if (user) return (
+    const OwnerProfile = (props) => {
+        const { owner } = props
+        if (owner) return (
             <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-                <Box component={Link} to={`/users/${user._id}`} 
+                <Box component={Link} to={`/users/${owner._id}`} 
                     sx={{ 
                         color: 'inherit', textDecoration: 'inherit',
                         display: 'flex'
                     }}>
-                    <Avatar src={user.avatar ? `/api/${user.avatar}`: undefined}
+                    <Avatar src={owner.avatar ? `/api/${owner.avatar}`: undefined}
                         sx={{ width: 50, height: 50, mr: 2 }} />
                     <Typography sx={{ fontWeight: 'bold' }}>
-                        {user.name || "Anonymous"}
+                        {owner.name || "Anonymous"}
                     </Typography>
                 </Box>
-                <Chip component={Link} to={`/messages/${user._id}/${item._id}`} onClick={() => {}}
+                <Chip component={Link} to={`/messages/${owner._id}/${item._id}`}
+                    disabled={user._id === owner._id}
+                    onClick={() => {}}
                     icon={<ForumIcon fontSize="small" />} label='Chat'
                     sx={{ alignSelf: 'center'  }} />
             </Box>
@@ -100,7 +344,7 @@ function ItemDetails(props) {
     if (item) return (
         <Box>
             <Toolbar />
-            <UserProfile user={owner} />
+            <OwnerProfile owner={owner} />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
                 <Box>
                     <Typography component='span' variant='body2' color='error' 
@@ -129,7 +373,7 @@ function ItemDetails(props) {
                     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                         {item.tags.map((tag, index) => (
                             <Chip key={index} 
-                                component={Link} to={`/tag=${tag}`} onClick={() => {}}
+                                component={Link} to={`/items?tags=${tag}`} onClick={() => {}}
                                 sx={{
                                     color: 'inherit', textDecoration: 'inherit',
                                     mr: 1, mb: 1
@@ -153,7 +397,7 @@ function ItemDetails(props) {
     else if (item === undefined) return (
         <Box display='flex' flexDirection='column' height={`calc(100vh - 20px)`}>
             <Toolbar />
-            <UserProfile />
+            <OwnerProfile />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
                 <Typography component='span' variant='h4' color='error'
                     sx={{ fontWeight: 'bold' }}>

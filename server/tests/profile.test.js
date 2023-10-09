@@ -1,46 +1,47 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
-const bcrypt = require('bcryptjs')
+const bcrypt = require("bcryptjs");
 const app = require("../app");
-const config = require('../config');
+const config = require("../config");
 const User = require("../models/user.model");
-const Item = require("../models/item.model");
-const Message = require("../models/message.model");
+const Item = require("../models/item.model").default;
+const Message = require("../models/message.model").default;
 const fs = require("fs");
-
-require("dotenv").config({ path: "./tests/.env" });
 
 const login = async (user) => {
     const response = await request(app)
         .post("/api/auth/login")
         .auth(user.username, user.password);
     expect(response.status).toBe(200);
-    return response.headers['set-cookie'];
+    return response.headers["set-cookie"];
 };
 
-const newUser = async (user) => new User({
-    username: user.username,
-    password: await bcrypt.hash(user.password, 10)
-}).save();
+const newUser = async (user) =>
+    new User({
+        username: user.username,
+        password: await bcrypt.hash(user.password, 10),
+    }).save();
 
-const newItem = async (user) => new Item({
-    owner: user._id,
-    description: `${user.username}'s item`
-}).save();
+const newItem = async (user) =>
+    new Item({
+        owner: user._id,
+        description: `${user.username}'s item`,
+    }).save();
 
-const newMessage = async (sender, receiver, item) => new Message({
-    sender: sender._id,
-    receiver: receiver._id,
-    item: item._id,
-    content: `${sender.username} to ${receiver.username}`
-}).save();
+const newMessage = async (sender, receiver, item) =>
+    new Message({
+        sender: sender._id,
+        receiver: receiver._id,
+        item: item._id,
+        content: `${sender.username} to ${receiver.username}`,
+    }).save();
 
 const user = {
     username: "test",
-    password: "test"
-}
+    password: "test",
+};
 var cookie;
-const tuxPath = './tests/tux.svg.png';
+const tuxPath = "./tests/tux.svg.png";
 
 beforeAll(async () => {
     await mongoose.connect(config.MONDODB_TEST_URI);
@@ -48,7 +49,7 @@ beforeAll(async () => {
     user._id = `${model._id}`;
     cookie = await login(user);
 });
-  
+
 afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
@@ -67,7 +68,7 @@ describe("GET /api/profile", () => {
     it("should return 200 if logged in", async () => {
         let response = await request(app)
             .get("/api/profile")
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body.username).toBe(user.username);
     });
@@ -83,13 +84,13 @@ describe("PATCH /api/profile", () => {
         const newpassword = "newpassword";
         let response = await request(app)
             .patch("/api/profile")
-            .set('Cookie', cookie)
-            .attach('avatar', tuxPath)
-            .field('name', 'test')
-            .field('password', newpassword);
+            .set("Cookie", cookie)
+            .attach("avatar", tuxPath)
+            .field("name", "test")
+            .field("password", newpassword);
         expect(response.status).toBe(204);
-        const mUser = await User.findById(user._id)
-        expect(mUser.name).toBe('test');
+        const mUser = await User.findById(user._id);
+        expect(mUser.name).toBe("test");
         expect(mUser.avatar).toBe(`${config.avatarsDir}/${user._id}.jpeg`);
         expect(fs.existsSync(mUser.avatar)).toBe(true);
         fs.unlinkSync(mUser.avatar);
@@ -104,7 +105,9 @@ describe("PATCH /api/profile", () => {
 // =============================================================================
 
 describe("POST /api/profile/items", () => {
-    afterAll(async () => { await Item.deleteMany({}); });
+    afterAll(async () => {
+        await Item.deleteMany({});
+    });
 
     it("should return 401 if not logged in", async () => {
         const response = await request(app).post("/api/profile/items");
@@ -114,15 +117,15 @@ describe("POST /api/profile/items", () => {
     it("should return 201 if logged in", async () => {
         let response = await request(app)
             .post("/api/profile/items")
-            .set('Cookie', cookie)
-            .attach('images', tuxPath)
-            .attach('images', tuxPath)
-            .field('description', 'test')
-            .field('tags', JSON.stringify(["test", "test"]));
+            .set("Cookie", cookie)
+            .attach("images", tuxPath)
+            .attach("images", tuxPath)
+            .field("description", "test")
+            .field("tags", JSON.stringify(["test", "test"]));
         expect(response.status).toBe(201);
         expect(response.body.tags).toEqual(["test"]);
         expect(response.body.images.length).toBe(2);
-        response.body.images.forEach(image => {
+        response.body.images.forEach((image) => {
             expect(fs.existsSync(image)).toBe(true);
             fs.unlinkSync(image);
         });
@@ -140,20 +143,24 @@ describe("PATCH /api/profile/items/:id", () => {
         itemId = item._id;
     });
 
-    afterAll(async () => { await Item.deleteMany({}); });
+    afterAll(async () => {
+        await Item.deleteMany({});
+    });
 
     it("should return 401 if not logged in", async () => {
-        const response = await request(app).patch(`/api/profile/items/${itemId}`);
+        const response = await request(app).patch(
+            `/api/profile/items/${itemId}`
+        );
         expect(response.status).toBe(401);
     });
 
     it("should return 204 if logged in", async () => {
         let response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
-            .set('Cookie', cookie)
-            .attach('images', tuxPath)
-            .field('description', 'test2')
-            .field('tags', JSON.stringify(["test", "test"]));
+            .set("Cookie", cookie)
+            .attach("images", tuxPath)
+            .field("description", "test2")
+            .field("tags", JSON.stringify(["test", "test"]));
         expect(response.status).toBe(204);
 
         let updatedItem = await Item.findById(itemId);
@@ -163,26 +170,26 @@ describe("PATCH /api/profile/items/:id", () => {
 
         response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
-            .set('Cookie', cookie)
-            .attach('images', tuxPath)
-            .field('replaceTags', true)
-            .field('tags', JSON.stringify(["test2"]));
+            .set("Cookie", cookie)
+            .attach("images", tuxPath)
+            .field("replaceTags", true)
+            .field("tags", JSON.stringify(["test2"]));
         expect(response.status).toBe(204);
 
         updatedItem = await Item.findById(itemId);
         expect(updatedItem.tags).toEqual(["test2"]);
         expect(updatedItem.images.length).toBe(2);
-        updatedItem.images.forEach(image => {
+        updatedItem.images.forEach((image) => {
             expect(fs.existsSync(image)).toBe(true);
             fs.unlinkSync(image);
         });
 
         response = await request(app)
             .patch(`/api/profile/items/${itemId}`)
-            .set('Cookie', cookie)
-            .attach('images', tuxPath)
-            .field('replaceImages', true)
-            .field('tags', JSON.stringify(["test3"]));
+            .set("Cookie", cookie)
+            .attach("images", tuxPath)
+            .field("replaceImages", true)
+            .field("tags", JSON.stringify(["test3"]));
         expect(response.status).toBe(204);
 
         updatedItem = await Item.findById(itemId);
@@ -201,14 +208,16 @@ describe("DELETE /api/profile/items/:id", () => {
     });
 
     it("should return 401 if not logged in", async () => {
-        const response = await request(app).delete(`/api/profile/items/${itemId}`);
+        const response = await request(app).delete(
+            `/api/profile/items/${itemId}`
+        );
         expect(response.status).toBe(401);
     });
 
     it("should return 204 if logged in", async () => {
         let response = await request(app)
             .delete(`/api/profile/items/${itemId}`)
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(204);
 
         const deletedItem = await Item.findOne({ _id: itemId });
@@ -225,7 +234,10 @@ describe("GET /api/profile/messages", () => {
 
     beforeAll(async () => {
         for (let i of [1, 2]) {
-            mUser = await newUser({ username: `test${i}`, password: `test${i}` });
+            mUser = await newUser({
+                username: `test${i}`,
+                password: `test${i}`,
+            });
             for (let j = 0; j < 2; j++) {
                 mItem = await newItem(mUser);
                 await newMessage(user, mUser, mItem);
@@ -250,31 +262,35 @@ describe("GET /api/profile/messages", () => {
             .get("/api/profile/messages")
             .query({
                 otherUser: `${mUser._id}`,
-                item: `${mItem._id}`
+                item: `${mItem._id}`,
             })
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body.length).toBeGreaterThan(0);
-        response.body.forEach(message => {
+        response.body.forEach((message) => {
             expect(`${message.item}`).toBe(`${mItem._id}`);
             if (`${message.sender}` === user._id) {
-                expect(message.content).toBe(`${user.username} to ${mUser.username}`);
+                expect(message.content).toBe(
+                    `${user.username} to ${mUser.username}`
+                );
             } else {
-                expect(message.content).toBe(`${mUser.username} to ${user.username}`);
+                expect(message.content).toBe(
+                    `${mUser.username} to ${user.username}`
+                );
             }
         });
 
         response = await request(app)
             .get("/api/profile/messages")
             .query({ offset: 1, limit: 1 })
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
 
         const message = response.body[0];
         response = await request(app)
             .get(`/api/profile/messages/${message._id}`)
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body.content).toBe(message.content);
     });
@@ -300,7 +316,7 @@ describe("GET /api/profile/messages/count", () => {
         let response = await request(app)
             .get("/api/profile/messages/count")
             .query({ item: `${item._id}` })
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body).toBe(0);
 
@@ -308,7 +324,7 @@ describe("GET /api/profile/messages/count", () => {
         response = await request(app)
             .get("/api/profile/messages/count")
             .query({ item: `${item._id}` })
-            .set('Cookie', cookie);
+            .set("Cookie", cookie);
         expect(response.status).toBe(200);
         expect(response.body).toBe(1);
     });
@@ -336,24 +352,24 @@ describe("POST /api/profile/messages", () => {
     it("should return 201 if logged in", async () => {
         let response = await request(app)
             .post("/api/profile/messages")
-            .set('Cookie', cookie)
+            .set("Cookie", cookie)
             .send({
                 item: `${mItem._id}`,
-                content: "test"
+                content: "test",
             });
         expect(response.status).toBe(201);
         expect(response.body.blocked).toBe(false);
 
         const mUser = await User.findById(mItem.owner);
         mUser.blockedUsers = [user._id];
-        await mUser.save();    
+        await mUser.save();
 
         response = await request(app)
             .post("/api/profile/messages")
-            .set('Cookie', cookie)
+            .set("Cookie", cookie)
             .send({
                 item: `${mItem._id}`,
-                content: "test2"
+                content: "test2",
             });
         expect(response.status).toBe(201);
         expect(response.body.blocked).toBe(true);

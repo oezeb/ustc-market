@@ -8,6 +8,7 @@ const Message = require("../models/message.model");
 const auth = require("../middleware/auth");
 const { upload, resizeImage } = require("../middleware/image");
 router.use(auth);
+const { encrypt, decrypt } = require("../middleware/encryption");
 
 // GET request to /api/profile
 // Returns the user
@@ -138,6 +139,11 @@ router.route("/items/:id").delete((req, res) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
+const decryptMessages = (messages) => {
+    for (let msg of messages) msg.content = decrypt(msg.content);
+    return messages;
+};
+
 // GET request to /api/profile/messages
 // Returns the user's messages
 router.route("/messages").get((req, res) => {
@@ -158,7 +164,7 @@ router.route("/messages").get((req, res) => {
     Message.find(query)
         .skip(offset)
         .limit(limit)
-        .then((messages) => res.json(messages))
+        .then((messages) => res.json(decryptMessages(messages)))
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
@@ -189,7 +195,7 @@ router.route("/messages/:id").get((req, res) => {
         blocked: false,
         $or: [{ sender: req.userId }, { receiver: req.userId }],
     })
-        .then((message) => res.json(message))
+        .then((message) => res.json(decryptMessages([message])[0]))
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
@@ -198,16 +204,21 @@ router.route("/messages/:id").get((req, res) => {
 router.route("/messages").post(async (req, res) => {
     const item = await Item.findById(req.body.item);
     if (!item) return res.status(400).json({ error: "Item not found" });
+
+    const receiver = await User.findById(item.owner);
+    if (!receiver) return res.status(400).json({ error: "Receiver not found" });
+
     const message = new Message({
-        sender: req.userId,
-        receiver: item.owner,
         item: item._id,
-        content: req.body.content,
+        sender: req.userId,
+        receiver: receiver._id,
+        content: encrypt(req.body.content),
+        blocked: receiver.blockedUsers.includes(req.userId),
     });
 
     message
         .save()
-        .then(() => res.status(201).json(message))
+        .then(() => res.status(201).json(decryptMessages([message])[0]))
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

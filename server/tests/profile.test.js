@@ -6,6 +6,7 @@ const config = require("../config");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
+const { encrypt } = require("../middleware/encryption");
 const fs = require("fs");
 
 const login = async (user) => {
@@ -33,7 +34,7 @@ const newMessage = async (sender, receiver, item) =>
         sender: sender._id,
         receiver: receiver._id,
         item: item._id,
-        content: `${sender.username} to ${receiver.username}`,
+        content: encrypt(`${sender.username} to ${receiver.username}`),
     }).save();
 
 const user = {

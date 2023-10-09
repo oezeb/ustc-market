@@ -4,8 +4,8 @@ const bcrypt = require("bcryptjs");
 const app = require("../app");
 const config = require("../config");
 const User = require("../models/user.model");
-const Item = require("../models/item.model").default;
-const Message = require("../models/message.model").default;
+const Item = require("../models/item.model");
+const Message = require("../models/message.model");
 const fs = require("fs");
 
 const login = async (user) => {

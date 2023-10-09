@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const app = require("../app");
 const config = require("../config");
 const User = require("../models/user.model");
-const Item = require("../models/item.model").default;
+const Item = require("../models/item.model");
 
 const login = async (user) => {
     const response = await request(app)

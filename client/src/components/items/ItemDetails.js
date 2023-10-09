@@ -20,8 +20,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { useAuth } from "AuthProvider";
 import { apiRoutes } from "api";
+import { useAuth } from "components/auth/AuthProvider";
 
 const soldIcon = require("sold.icon.png");
 
@@ -33,7 +33,7 @@ function ItemDetails(props) {
 
     React.useEffect(() => {
         fetch(apiRoutes.items + "/" + props.id)
-            .then((res) => res.json())
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((item) => setItem(item))
             .catch((err) => {
                 console.error(err);

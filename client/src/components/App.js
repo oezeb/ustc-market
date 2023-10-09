@@ -1,16 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 
-import AuthProvider, { RequireAuth } from "AuthProvider";
+import AuthProvider, { RequireAuth } from "components/auth/AuthProvider";
 
-import AddItem from "./AddItem";
-import EditItem from "./EditItem";
 import Home from "./Home";
 import Layout from "./Layout";
-import Login from "./Login";
-import Profile from "./Profile";
+import Login from "./auth/Login";
+import AddItem from "./items/AddItem";
+import EditItem from "./items/EditItem";
 import Items from "./items/Items";
+import Profile from "./profile/Profile";
+import ProfileEdit from "./profile/ProfileEdit";
 import Users from "./users/Users";
-import ProfileEdit from "./ProfileEdit";
 
 function App() {
     return (

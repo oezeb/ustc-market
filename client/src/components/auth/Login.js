@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "AuthProvider";
+import { useAuth } from "components/auth/AuthProvider";
 
 const Login = () => {
     const auth = useAuth();

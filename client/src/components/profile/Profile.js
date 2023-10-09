@@ -6,13 +6,13 @@ import Box from "@mui/material/Box";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
 import React from "react";
+import { Link } from "react-router-dom";
 
-import { useAuth } from "AuthProvider";
 import { apiRoutes } from "api";
-import { ItemListContent } from "./items/ItemList";
-import { FullScreenImageDialog } from "./items/ItemDetails";
+import { useAuth } from "components/auth/AuthProvider";
+import { FullScreenImageDialog } from "components/items/ItemDetails";
+import { ItemListContent } from "components/items/ItemList";
 
 function Profile() {
     const { user } = useAuth();

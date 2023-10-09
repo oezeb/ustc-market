@@ -1,20 +1,19 @@
-import React from "react";
-import {
-    Alert,
-    Avatar,
-    Box,
-    Button,
-    Input,
-    InputLabel,
-    Snackbar,
-    TextField,
-    Toolbar,
-} from "@mui/material";
 import BorderColor from "@mui/icons-material/BorderColor";
-import { useAuth } from "AuthProvider";
-import { apiRoutes } from "api";
+import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
+import InputLabel from "@mui/material/InputLabel";
+import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FullScreenImageDialog } from "./items/ItemDetails";
+
+import { apiRoutes } from "api";
+import { useAuth } from "components/auth/AuthProvider";
+import { FullScreenImageDialog } from "components/items/ItemDetails";
 
 function ProfileEdit() {
     const { user, login, updateUser } = useAuth();

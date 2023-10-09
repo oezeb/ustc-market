@@ -1,10 +1,11 @@
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Box } from "@mui/system";
-import { ItemListContent } from "components/items/ItemList";
 import React from "react";
+
+import { ItemListContent } from "components/items/ItemList";
 
 function UserDetails(props) {
     const { id } = props;
@@ -12,7 +13,7 @@ function UserDetails(props) {
 
     React.useEffect(() => {
         fetch(`/api/users/${id}`)
-            .then((res) => res.json())
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((user) => setUser(user))
             .catch((err) => console.error(err));
     }, [id]);

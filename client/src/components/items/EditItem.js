@@ -5,9 +5,10 @@ import Toolbar from "@mui/material/Toolbar";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useAuth } from "../AuthProvider";
-import { apiRoutes } from "../api";
 import AddEditItem from "./AddEditItem";
+
+import { apiRoutes } from "api";
+import { useAuth } from "components/auth/AuthProvider";
 
 function EditItem() {
     const { id } = useParams();
@@ -34,7 +35,7 @@ function EditItem() {
 
     React.useEffect(() => {
         fetch(apiRoutes.items + `/${id}`)
-            .then((res) => res.json())
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((item) => {
                 item.images = item.images.map((img) => `/api/${img}`);
                 Promise.all(item.images.map(imgtoDataUrl)).then((dataUrls) => {

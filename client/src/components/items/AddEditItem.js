@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
@@ -14,8 +15,8 @@ import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import React from "react";
-import { apiRoutes } from "../api";
-import { Checkbox, FormControlLabel } from "@mui/material";
+
+import { apiRoutes } from "api";
 
 function AddEditItem(props) {
     const { showSoldCheckbox } = props;
@@ -118,7 +119,7 @@ const TagsInput = (props) => {
     const tagsLimit = 15;
     React.useEffect(() => {
         fetch(apiRoutes.itemTags + `?limit=${tagsLimit}`)
-            .then((res) => res.json())
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((tags) => tags.map((tag) => tag.tag))
             .then((tags) => setTags(tags))
             .catch((err) => console.error(err));

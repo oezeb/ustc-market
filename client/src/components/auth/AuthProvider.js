@@ -1,8 +1,9 @@
-import React from "react";
 import { LinearProgress } from "@mui/material";
+import React from "react";
 import { Navigate } from "react-router-dom";
 const log = require("loglevel");
-const { apiRoutes } = require("./api");
+
+const { apiRoutes } = require("api");
 
 const AuthContext = React.createContext();
 

@@ -15,8 +15,10 @@ import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
 import React from "react";
 import { apiRoutes } from "../api";
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 function AddEditItem(props) {
+    const { showSoldCheckbox } = props;
     const [images, setImages] = React.useState(props.images || []);
 
     const dataURLtoBlob = (dataURL) => {
@@ -31,6 +33,9 @@ function AddEditItem(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+
+        const sold = formData.get("sold") === "on";
+        formData.set("sold", sold);
 
         let tags = formData
             .get("tags")
@@ -52,31 +57,43 @@ function AddEditItem(props) {
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
             <Toolbar />
-            <TextField
-                name="price"
-                label="Price (RMB)"
-                defaultValue={props.price}
-                fullWidth
-                variant="standard"
-                size="small"
-                type="number"
-                sx={{ mb: 2 }}
-            />
+            <Box display="flex" alignItems="center">
+                <TextField
+                    name="price"
+                    label="Price (RMB)"
+                    defaultValue={props.price}
+                    fullWidth
+                    variant="standard"
+                    margin="normal"
+                    size="small"
+                    type="number"
+                />
+                {showSoldCheckbox && (
+                    <FormControlLabel
+                        name="sold"
+                        margin="normal"
+                        label="Sold"
+                        control={<Checkbox defaultChecked={props.sold} />}
+                        labelPlacement="start"
+                    />
+                )}
+            </Box>
             <TextField
                 name="description"
                 label="Description"
                 defaultValue={props.description}
                 fullWidth
                 required
+                margin="normal"
                 size="small"
                 multiline
                 maxRows={5}
                 minRows={5}
-                sx={{ mb: 2 }}
+                inputProps={{ minLength: 3 }}
                 placeholder={descriptionPlaceholder}
             />
             <TagsInput
-                defaultValue={props.tags.map((tag) => `#${tag}`).join(" ")}
+                defaultValue={props.tags?.map((tag) => `#${tag}`).join(" ")}
             />
             <ImagesInput images={images} setImages={setImages} />
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
@@ -122,6 +139,7 @@ const TagsInput = (props) => {
                 sx={{ mb: 2 }}
                 label="Tags"
                 multiline
+                margin="normal"
                 maxRows={3}
                 minRows={3}
                 value={text}

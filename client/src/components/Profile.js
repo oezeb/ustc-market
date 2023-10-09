@@ -1,45 +1,60 @@
-import EditIcon from "@mui/icons-material/Edit";
+import BorderColor from "@mui/icons-material/BorderColor";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { IconButton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useAuth } from "../AuthProvider";
+import { Link } from "react-router-dom";
+import React from "react";
+
+import { useAuth } from "AuthProvider";
+import { apiRoutes } from "api";
+import { ItemListContent } from "./items/ItemList";
+import { FullScreenImageDialog } from "./items/ItemDetails";
 
 function Profile() {
     const { user } = useAuth();
+    const [open, setOpen] = React.useState(false); // full screen avatar
+
+    const onLogout = () => {
+        fetch(apiRoutes.logout, { method: "POST" })
+            .then((res) => res.ok && window.location.reload())
+            .catch((err) => console.error(err));
+    };
 
     return (
-        <Box>
-            <Toolbar />
-            <Paper>
-                <Box sx={{ display: "flex", pt: 2, pb: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box position="sticky" top={0} zIndex={1} p={1}>
+                <Toolbar />
+                <Box
+                    sx={{
+                        color: "inherit",
+                        textDecoration: "inherit",
+                        display: "flex",
+                    }}
+                >
                     <Avatar
-                        sx={{ width: 100, height: 100 }}
-                        src={user.avatar ? `/api/${user.avatar}` : undefined}
+                        src={`/api/${user?.avatar}`}
+                        sx={{ width: 100, height: 100, mr: 2 }}
+                        onClick={() => setOpen(true)}
                     />
-                    <Box
-                        sx={{ ml: 2, display: "flex", flexDirection: "column" }}
-                    >
+                    <Box display="flex" flexDirection="column">
                         <ListItemText secondary={user.username} sx={{ m: 0 }}>
                             <Typography
                                 component="span"
                                 sx={{ fontWeight: "bold" }}
-                                variant="h6"
                             >
-                                {user.name}
+                                {user.name || "Anonymous"}
                             </Typography>
-                            <IconButton size="small">
-                                <EditIcon fontSize="inherit" />
+                            <IconButton size="small" component={Link} to="edit">
+                                <BorderColor fontSize="inherit" />
                             </IconButton>
                         </ListItemText>
                         <Box sx={{ flexGrow: 1 }} />
                         <Box display="flex">
-                            <IconButton size="small">
+                            <IconButton size="small" onClick={onLogout}>
                                 <LogoutIcon fontSize="inherit" />
                                 <Typography ml={0.5} variant="caption">
                                     Logout
@@ -48,10 +63,16 @@ function Profile() {
                         </Box>
                     </Box>
                 </Box>
-            </Paper>
-            <ListItem divider>
-                <Typography variant="h6">My Items</Typography>
-            </ListItem>
+            </Box>
+            <ItemListContent owner={user._id} />
+            <Toolbar />
+            {user?.avatar && (
+                <FullScreenImageDialog
+                    open={open}
+                    setOpen={setOpen}
+                    imageURL={`/api/${user.avatar}`}
+                />
+            )}
         </Box>
     );
 }

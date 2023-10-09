@@ -88,7 +88,11 @@ function EditItem() {
             );
         return (
             <>
-                <AddEditItem onSubmit={handleSubmit} {...item} />
+                <AddEditItem
+                    onSubmit={handleSubmit}
+                    {...item}
+                    showSoldCheckbox
+                />
                 <Snackbar
                     open={open}
                     autoHideDuration={5000}

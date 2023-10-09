@@ -1,44 +1,52 @@
-const router = require('express').Router()
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const config = require('../config')
-const User = require('../models/user.model')
+const router = require("express").Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("../config");
+const User = require("../models/user.model");
 
 // POST request to /api/auth/login
 // Uses Basic Auth to authenticate user
 // If successful, returns cookie with JWT
-router.route('/login').post((req, res) => {
-    const authHeader = req.headers['authorization']
-    const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':')
-    const username = auth[0]
-    const password = auth[1]
+router.route("/login").post((req, res) => {
+    const authHeader = req.headers["authorization"];
+    const auth = Buffer.from(authHeader.split(" ")[1], "base64")
+        .toString()
+        .split(":");
+    const username = auth[0];
+    const password = auth[1];
 
     User.findOne({ username: username })
-        .then(user => {
+        .then((user) => {
             if (!user) {
-                return res.status(404).json({ error: 'User not found' })
+                return res.status(404).json({ error: "User not found" });
             }
 
-            bcrypt.compare(password, user.password)
-                .then(isMatch => {
+            bcrypt
+                .compare(password, user.password)
+                .then((isMatch) => {
                     if (!isMatch) {
-                        return res.status(401).json({ error: 'Password does not match' })
+                        return res
+                            .status(401)
+                            .json({ error: "Password does not match" });
                     }
 
-                    const token = jwt.sign({ _id: user._id }, config.JWT_SECRET)
-                    res.cookie('token', token, { httpOnly: true })
-                    res.json(user)
+                    const token = jwt.sign(
+                        { _id: user._id },
+                        config.JWT_SECRET
+                    );
+                    res.cookie("token", token, { httpOnly: true });
+                    res.json(user);
                 })
-                .catch(err => res.status(400).json({ error: err.message }))
+                .catch((err) => res.status(400).json({ error: err.message }));
         })
-        .catch(err => res.status(400).json({ error: err.message }))
-})
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
 
 // POST request to /api/auth/logout
 // Clears cookie with JWT
-router.route('/logout').post((req, res) => {
-    res.clearCookie('token')
-    res.status(204).json()
-})
+router.route("/logout").post((req, res) => {
+    res.clearCookie("token");
+    res.status(204).json();
+});
 
-module.exports = router
+module.exports = router;

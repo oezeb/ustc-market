@@ -1,10 +1,11 @@
-const fs = require('fs');
-require('dotenv').config({ path: './.env' });
+const fs = require("fs");
+require("dotenv").config({ path: "./.env" });
 
-const uploadsDir = 'uploads';
-const avatarsDir = 'uploads/avatars';
-const itemImagesDir = 'uploads/item-images';
-for (const dir of [uploadsDir, avatarsDir, itemImagesDir]) {
+const uploadsDir = "uploads";
+const recycleBinDir = "recycle-bin";
+const avatarsDir = "uploads/avatars";
+const itemImagesDir = "uploads/item-images";
+for (const dir of [uploadsDir, avatarsDir, itemImagesDir, recycleBinDir]) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 }
 
@@ -19,5 +20,8 @@ module.exports = {
     ENCRYPTION_ALGORITHM: process.env.ENCRYPTION_ALGORITHM,
 
     // Directories
-    uploadsDir, avatarsDir, itemImagesDir,
-}
+    uploadsDir,
+    recycleBinDir,
+    avatarsDir,
+    itemImagesDir,
+};

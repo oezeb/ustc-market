@@ -11,59 +11,58 @@ Options:
 
 const args = process.argv.slice(2); // get command line arguments
 
-// parse arguments
 let username, password, name;
 for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
-        case '-u':
-        case '--username':
+        case "-u":
+        case "--username":
             username = args[++i];
             break;
-        case '-p':
-        case '--password':
+        case "-p":
+        case "--password":
             password = args[++i];
             break;
-        case '-n':
-        case '--name':
+        case "-n":
+        case "--name":
             name = args[++i];
             break;
-        case '-h':
-        case '--help':
+        case "-h":
+        case "--help":
         default:
             console.log(help);
             process.exit(0);
     }
 }
 
-// validate arguments
 if (!username || !password) {
     console.log(help);
     process.exit(1);
 }
 
-// connect to MongoDB
-const mongoose = require('mongoose');
-const config = require('./config');
-const bcrypt = require('bcryptjs');
-const User = require('./models/user.model');
+const mongoose = require("mongoose");
+const config = require("./config");
+const bcrypt = require("bcryptjs");
+const User = require("./models/user.model");
 
-mongoose.connect(config.MONGODB_URI)
+mongoose
+    .connect(config.MONGODB_URI)
     .then(async () => {
         new User({
             username,
             password: await bcrypt.hash(password, 10),
-            name
-        }).save()
-            .then(user => {
+            name,
+        })
+            .save()
+            .then((user) => {
                 console.log(`User created with ID: ${user._id}`);
                 process.exit(0);
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 process.exit(1);
             });
     })
-    .catch(err => {
+    .catch((err) => {
         console.log(err);
         process.exit(1);
     });

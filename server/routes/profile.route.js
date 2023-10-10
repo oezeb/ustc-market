@@ -1,3 +1,4 @@
+const fs = require("fs");
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 
@@ -23,7 +24,12 @@ router.route("/").patch(async (req, res) => {
         avatar: req.body.avatar,
         password: await bcrypt.hash(req.body.password || "", 10),
     })
-        .then(() => res.status(204).json())
+        .then((user) => {
+            if (!user) return Promise.reject(new Error("User not found"));
+            if (user.avatar) fs.unlinkSync(user.avatar);
+
+            return res.status(204).json();
+        })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

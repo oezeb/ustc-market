@@ -1,3 +1,4 @@
+const fs = require("fs");
 const router = require("express").Router();
 
 const Item = require("../models/item.model");
@@ -115,17 +116,23 @@ router.route("/:id").patch((req, res) => {
             images: req.body.images,
         }
     )
-        .then((item) => item || Promise.reject(new Error("Item not found")))
-        .then((item) => res.status(204).json())
+        .then((item) => {
+            if (!item) return Promise.reject(new Error("Item not found"));
+            item.images?.forEach((image) => fs.unlinkSync(image));
+            return res.status(204).json();
+        })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
 // DELETE /api/items/:id
 // Deletes current user's item with specified id
-router.route("/:id").delete((req, res) => {
+router.route("/:id").delete(async (req, res) => {
     Item.findOneAndDelete({ _id: req.params.id, owner: req.userId })
-        .then((item) => item || Promise.reject(new Error("Item not found")))
-        .then((item) => res.status(204).json())
+        .then((item) => {
+            if (!item) return Promise.reject(new Error("Item not found"));
+            item.images?.forEach((image) => fs.unlinkSync(image));
+            return res.status(204).json();
+        })
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

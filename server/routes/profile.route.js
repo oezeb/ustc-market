@@ -1,28 +1,32 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const sharp = require("sharp");
+
 const config = require("../config");
+const { encrypt, decrypt } = require("../encryption");
+const auth = require("../middleware/auth");
+const { uploadImage, resizeImage } = require("../middleware/image");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
-const auth = require("../middleware/auth");
-const { upload, resizeImage } = require("../middleware/image");
-router.use(auth);
-const { encrypt, decrypt } = require("../middleware/encryption");
 
-// GET request to /api/profile
-// Returns the user
+router.use(auth);
+
+// GET /api/profile
+// Returns current user
 router.route("/").get((req, res) => {
     User.findById(req.userId)
         .then((user) => res.json(user))
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// PATCH request to /api/profile
-// Updates the user (name, avatar, password)
-router.route("/").patch(upload.single("avatar"), resizeImage, (req, res) => {
-    User.findById(req.userId)
-        .then(async (user) => {
+// PATCH /api/profile
+// Updates current user (name, avatar, password)
+router
+    .route("/")
+    .patch(uploadImage.single("avatar"), resizeImage, async (req, res) => {
+        try {
+            const user = await User.findById(req.userId);
             if (req.body.name) user.name = req.body.name;
             if (req.file) {
                 const filename = `${config.avatarsDir}/${req.userId}.jpeg`;
@@ -30,26 +34,26 @@ router.route("/").patch(upload.single("avatar"), resizeImage, (req, res) => {
                 user.avatar = filename;
             }
             if (req.body.password) {
-                try {
-                    const hash = await bcrypt.hash(req.body.password, 10);
-                    user.password = hash;
-                } catch (err) {
-                    return res.status(400).json({ error: err.message });
-                }
+                const hash = await bcrypt.hash(req.body.password, 10);
+                user.password = hash;
             }
 
-            user.save()
-                .then(() => res.status(204).json())
-                .catch((err) => res.status(400).json({ error: err.message }));
-        })
-        .catch((err) => res.status(400).json({ error: err.message }));
-});
+            await user.save();
+            res.status(204).json();
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    });
 
-// POST request to /api/profile/items
-// Creates a new item
+// =============================================================================
+// Profile Items
+// =============================================================================
+
+// POST /api/profile/items
+// Creates a new item for the current user
 router
     .route("/items")
-    .post(upload.array("images", 5), resizeImage, (req, res) => {
+    .post(uploadImage.array("images", 5), resizeImage, (req, res) => {
         if (req.body.tags) {
             // convert tags to array if it's a json string
             if (typeof req.body.tags === "string")
@@ -82,7 +86,7 @@ router
 // Updates the user's item with the specified id
 router
     .route("/items/:id")
-    .patch(upload.array("images", 5), resizeImage, (req, res) => {
+    .patch(uploadImage.array("images", 5), resizeImage, (req, res) => {
         if (req.body.tags) {
             // convert tags to array if it's a json string
             if (typeof req.body.tags === "string")

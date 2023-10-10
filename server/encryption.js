@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const config = require("../config");
+const config = require("./config");
 
 const algo = config.ENCRYPTION_ALGORITHM;
 const keyHash = crypto

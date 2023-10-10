@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const itemSchema = new mongoose.Schema(
+const itemSchema = new Schema(
     {
         owner: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             required: true,
             ref: "User",
         },
@@ -22,5 +22,4 @@ const itemSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const Item = mongoose.model("Item", itemSchema);
-module.exports = Item;
+module.exports = model("Item", itemSchema);

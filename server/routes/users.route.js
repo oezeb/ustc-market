@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const User = require("../models/user.model");
+
 const auth = require("../middleware/auth");
+const User = require("../models/user.model");
 
 router.use(auth);
 
-// GET request to /api/users/:id
-// Returns a user (name, avatar)
+// GET /api/users/:id
+// Returns user (_id, name, avatar) with specified id
 router.route("/:id").get((req, res) => {
     User.findById(req.params.id, "name avatar")
         .then((user) => res.json(user))

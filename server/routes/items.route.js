@@ -1,11 +1,14 @@
 const router = require("express").Router();
+
 const Item = require("../models/item.model");
 const auth = require("../middleware/auth");
 
 router.use(auth);
 
-// GET request to /api/items
-// Returns items
+// GET /api/items
+// Returns items matching query
+// Query parameters include: owner, price, priceMin, priceMax, tags, sold, text,
+// orderBy, order, offset, limit, fields
 router.route("/").get((req, res) => {
     const query = {};
     if (req.query.owner) query.owner = req.query.owner;
@@ -32,8 +35,9 @@ router.route("/").get((req, res) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// GET request to /api/items/count
-// Returns item count
+// GET /api/items/count
+// Returns number of items matching query
+// Query parameters include: owner, price, priceMin, priceMax, tags, sold, text
 router.route("/count").get((req, res) => {
     const query = {};
     if (req.query.owner) query.owner = req.query.owner;
@@ -49,8 +53,10 @@ router.route("/count").get((req, res) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// GET request to /api/items/tags
-// Returns item tags with counts
+// GET /api/items/tags
+// Returns tags and their counts
+// Query parameters include: offset, limit
+// Example response: [{ tag: "tag1", count: 1 }, { tag: "tag2", count: 2 }]
 router.route("/tags").get((req, res) => {
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || undefined;
@@ -69,8 +75,8 @@ router.route("/tags").get((req, res) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// GET request to /api/items/:id
-// Returns an item
+// GET /api/items/:id
+// Returns item with specified id
 router.route("/:id").get((req, res) => {
     Item.findById(req.params.id)
         .then((item) => res.json(item))

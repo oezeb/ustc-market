@@ -1,9 +1,17 @@
 const multer = require("multer");
 const sharp = require("sharp");
 
-const storage = multer.memoryStorage();
-const upload = multer({
-    storage: storage,
+/**
+ * Multer instance to create middlewares that process images
+ * uploaded via multipart/form-data
+ *
+ * - `upload.single('key')` creates a single file middleware
+ * that populates `req.file`
+ * - `upload.array('key')` creates a multiple files middleware
+ * that populates `req.files`
+ */
+const uploadImage = multer({
+    storage: multer.memoryStorage(),
     limits: {
         fileSize: 1024 * 1024 * 10, // 10 MB
     },
@@ -16,25 +24,23 @@ const upload = multer({
     },
 });
 
-// Given image Buffer resize image to target size (default 1 MB)
-const resize = async (buffer, targetSize = 1024 * 1024 * 1) => {
-    let quality = 90;
-    while (buffer.length > targetSize && quality > 0) {
-        buffer = await sharp(buffer).jpeg({ quality: quality }).toBuffer();
-
-        quality -= 10;
-    }
-
-    if (quality === 0) {
-        throw new Error("File too large");
-    }
-
-    return buffer;
-};
-
-// middleware to resize image to 1 MB
+/**
+ * Middleware that resizes the image to a smaller size
+ */
 const resizeImage = (req, res, next) => {
     if (!req.file && !req.files) return next();
+
+    const resize = async (buffer) => {
+        const targetSize = 1024 * 1024 * 1; // 1 MB
+        let quality = 90;
+        while (buffer.length > targetSize && quality > 0) {
+            buffer = await sharp(buffer).jpeg({ quality: quality }).toBuffer();
+            quality -= 10;
+        }
+
+        if (quality === 0) throw new Error("File too large");
+        return buffer;
+    };
 
     const files = req.files ? req.files : [req.file];
     const promises = files.map((file) => resize(file.buffer));
@@ -56,4 +62,4 @@ const resizeImage = (req, res, next) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 };
 
-module.exports = { upload, resizeImage };
+module.exports = { uploadImage, resizeImage };

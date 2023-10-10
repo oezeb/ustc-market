@@ -6,7 +6,7 @@ const config = require("../config");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
-const { encrypt } = require("../middleware/encryption");
+const { encrypt } = require("../encryption");
 const fs = require("fs");
 
 const login = async (user) => {

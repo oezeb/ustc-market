@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
     {
         username: {
             type: String,
@@ -10,13 +10,12 @@ const userSchema = new mongoose.Schema(
             minlength: 3,
         },
         password: { type: String },
-        name: { type: String, default: "anonymous" },
+        name: { type: String, default: "Anonymous" },
         avatar: { type: String },
 
-        blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        blockedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+module.exports = model("User", userSchema);

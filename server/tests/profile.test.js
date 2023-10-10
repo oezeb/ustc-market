@@ -4,10 +4,7 @@ const bcrypt = require("bcryptjs");
 
 const app = require("../app");
 const config = require("../config");
-const { encrypt } = require("../encryption");
 const User = require("../models/user.model");
-const Item = require("../models/item.model");
-const Message = require("../models/message.model");
 
 const login = async (user) => {
     const response = await request(app)
@@ -21,20 +18,6 @@ const newUser = async (user) =>
     new User({
         username: user.username,
         password: await bcrypt.hash(user.password, 10),
-    }).save();
-
-const newItem = async (user) =>
-    new Item({
-        owner: user._id,
-        description: `${user.username}'s item`,
-    }).save();
-
-const newMessage = async (sender, receiver, item) =>
-    new Message({
-        sender: sender._id,
-        receiver: receiver._id,
-        item: item._id,
-        content: encrypt(`${sender.username} to ${receiver.username}`),
     }).save();
 
 const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");

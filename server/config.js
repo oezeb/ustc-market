@@ -1,4 +1,8 @@
+const fs = require("fs");
 require("dotenv").config({ path: "./.env" });
+
+const uploadsDir = "uploads";
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
 module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
@@ -8,4 +12,6 @@ module.exports = {
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     ENCRYPTION_IV: process.env.ENCRYPTION_IV,
     ENCRYPTION_ALGORITHM: process.env.ENCRYPTION_ALGORITHM,
+
+    uploadsDir,
 };

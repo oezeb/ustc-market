@@ -21,8 +21,6 @@ const newUser = async (user) =>
         password: await bcrypt.hash(user.password, 10),
     }).save();
 
-const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");
-const imgDataURL = `data:image/jpeg;base64,${tuxImage}`;
 const user = {
     username: "test",
     password: "test",
@@ -31,7 +29,7 @@ var cookie;
 
 beforeAll(async () => {
     await mongoose.connect(config.MONDODB_TEST_URI);
-    const model = await newUser(user);
+    model = await newUser(user);
     user._id = `${model._id}`;
     cookie = await login(user);
 });
@@ -57,7 +55,6 @@ describe("GET /api/items", () => {
     };
 
     beforeAll(async () => {
-        let model;
         model = await newUser(user1);
         user1._id = `${model._id}`;
 
@@ -85,8 +82,9 @@ describe("GET /api/items", () => {
 
     it("filter by owner", async () => {
         let response = await request(app)
-            .get(`/api/items?owner=${user1._id}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ owner: user1._id });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user1Item._id);
@@ -94,22 +92,25 @@ describe("GET /api/items", () => {
 
     it("filter by price", async () => {
         let response = await request(app)
-            .get(`/api/items?price=${user1Item.price}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ price: user1Item.price });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user1Item._id);
 
         response = await request(app)
-            .get(`/api/items?priceMin=${user2Item.price}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ priceMin: user2Item.price });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user2Item._id);
 
         response = await request(app)
-            .get(`/api/items?priceMax=${user1Item.price}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ priceMax: user1Item.price });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user1Item._id);
@@ -117,36 +118,41 @@ describe("GET /api/items", () => {
 
     it("filter by tags", async () => {
         let response = await request(app)
-            .get(`/api/items?tags=${user1Item.tags[0]}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ tags: user1Item.tags[0] });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user1Item._id);
 
         response = await request(app)
-            .get(`/api/items?tags=${user1Item.tags[1]}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ tags: user1Item.tags[1] });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(2);
 
         response = await request(app)
-            .get(`/api/items?tags=${user1Item.tags[0]},${user2Item.tags[1]}`)
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ tags: `${user1Item.tags[0]},${user2Item.tags[1]}` });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(2);
     });
 
     it("filter by text", async () => {
         let response = await request(app)
-            .get("/api/items?text=test1's")
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ text: "test1's" });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(response.body[0]._id).toBe(user1Item._id);
 
         response = await request(app)
-            .get("/api/items?text=item")
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ text: "item" });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(2);
     });
@@ -271,20 +277,17 @@ describe("POST /api/items", () => {
                 price: 1,
                 description: "test",
                 tags: ["tag", "tag"],
-                images: [imgDataURL],
             });
         expect(response.status).toBe(201);
         expect(response.body._id).toBeDefined();
         expect(response.body.price).toBe(1);
         expect(response.body.description).toBe("test");
         expect(response.body.tags).toEqual(["tag"]);
-        expect(response.body.images.length).toBe(1);
 
         let item = await Item.findById(response.body._id);
         expect(item.price).toBe(1);
         expect(item.description).toBe("test");
         expect(item.tags).toEqual(["tag"]);
-        expect(item.images.length).toBe(1);
     });
 });
 
@@ -322,7 +325,6 @@ describe("PATCH /api/items/:id", () => {
                 price: 1,
                 description: "test2",
                 tags: ["tag", "tag"],
-                images: [imgDataURL],
             });
         expect(response.status).toBe(204);
 
@@ -330,7 +332,6 @@ describe("PATCH /api/items/:id", () => {
         expect(item.price).toBe(1);
         expect(item.description).toBe("test2");
         expect(item.tags).toEqual(["tag"]);
-        expect(item.images.length).toBe(1);
 
         response = await request(app)
             .patch(`/api/items/${itemId}`)

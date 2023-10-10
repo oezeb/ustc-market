@@ -20,8 +20,6 @@ const newUser = async (user) =>
         password: await bcrypt.hash(user.password, 10),
     }).save();
 
-const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");
-const imgDataURL = `data:image/jpeg;base64,${tuxImage}`;
 const user = {
     username: "test",
     password: "test",
@@ -69,12 +67,10 @@ describe("PATCH /api/profile", () => {
             .send({
                 name: "test",
                 password: newpassword,
-                avatar: imgDataURL,
             });
         expect(response.status).toBe(204);
         const mUser = await User.findById(user._id);
         expect(mUser.name).toBe("test");
-        expect(mUser.avatar).toBeDefined();
 
         user.password = newpassword;
         cookie = await login(user);

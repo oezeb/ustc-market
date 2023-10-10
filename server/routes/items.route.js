@@ -1,10 +1,7 @@
 const router = require("express").Router();
-const sharp = require("sharp");
 
-const config = require("../config");
 const Item = require("../models/item.model");
 const auth = require("../middleware/auth");
-const { resizeImages } = require("../middleware/items");
 
 router.use(auth);
 
@@ -89,15 +86,15 @@ router.route("/:id").get((req, res) => {
 
 // POST /api/items
 // Creates a new item for the current user
-// For images use HTTP DataURLs
-router.route("/").post(resizeImages, (req, res) => {
+// Images should be first uploaded to the server using /api/upload/images
+router.route("/").post((req, res) => {
     new Item({
         owner: req.userId,
         price: req.body.price,
         description: req.body.description,
         sold: req.body.sold,
         tags: [...new Set(req.body?.tags || [])], // Remove duplicates
-        images: req.body?.images,
+        images: req.body.images,
     })
         .save()
         .then((item) => res.status(201).json(item))
@@ -106,8 +103,8 @@ router.route("/").post(resizeImages, (req, res) => {
 
 // PATCH /api/items/:id
 // Updates current user's item with specified id
-// For images use HTTP DataURLs
-router.route("/:id").patch(resizeImages, (req, res) => {
+// Images should be first uploaded to the server using /api/upload/images
+router.route("/:id").patch((req, res) => {
     Item.findOneAndUpdate(
         { _id: req.params.id, owner: req.userId },
         {
@@ -115,7 +112,7 @@ router.route("/:id").patch(resizeImages, (req, res) => {
             description: req.body.description,
             sold: req.body.sold,
             tags: [...new Set(req.body?.tags || [])], // Remove duplicates
-            images: req.body?.images,
+            images: req.body.images,
         }
     )
         .then((item) => item || Promise.reject(new Error("Item not found")))

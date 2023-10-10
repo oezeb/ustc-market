@@ -2,7 +2,6 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 
 const auth = require("../middleware/auth");
-const { resizeAvatar } = require("../middleware/profile");
 const User = require("../models/user.model");
 
 router.use(auth);
@@ -17,7 +16,8 @@ router.route("/").get((req, res) => {
 
 // PATCH /api/profile
 // Updates current user (name, avatar, password)
-router.route("/").patch(resizeAvatar, async (req, res) => {
+// avatar should be first uploaded to the server using /api/upload/images
+router.route("/").patch(async (req, res) => {
     User.findByIdAndUpdate(req.userId, {
         name: req.body.name,
         avatar: req.body.avatar,

@@ -6,6 +6,9 @@ const { resizeImage } = require("../image");
 const resizeImages = (req, res, next) => {
     if (!req.body.images) return next();
 
+    const limit = 5;
+    req.body.images = req.body.images.slice(0, limit);
+
     Promise.all(req.body.images.map((image) => resizeImage(image)))
         .then((results) => {
             req.body.images = results;

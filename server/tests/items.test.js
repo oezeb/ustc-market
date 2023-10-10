@@ -20,6 +20,8 @@ const newUser = async (user) =>
         password: await bcrypt.hash(user.password, 10),
     }).save();
 
+const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");
+const imgDataUrl = `data:image/jpeg;base64,${tuxImage}`;
 const user = {
     username: "test",
     password: "test",
@@ -244,5 +246,134 @@ describe("GET /api/items/tags", () => {
         expect(response.body[1].tag).toBe("tag2");
         expect(response.body[1].count).toBe(2);
         expect(response.body[2].tag).toBe("tag1");
+    });
+});
+
+describe("POST /api/items", () => {
+    afterAll(async () => {
+        await Item.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        let response = await request(app).post(`/api/items`);
+        expect(response.status).toBe(401);
+    });
+
+    it("should create a new item", async () => {
+        let response = await request(app)
+            .post("/api/items")
+            .set("Cookie", cookie)
+            .send({
+                price: 1,
+                description: "test",
+                tags: ["tag", "tag"],
+                images: [imgDataUrl],
+            });
+        expect(response.status).toBe(201);
+        expect(response.body._id).toBeDefined();
+        expect(response.body.price).toBe(1);
+        expect(response.body.description).toBe("test");
+        expect(response.body.tags).toEqual(["tag"]);
+        expect(response.body.images.length).toBe(1);
+
+        let item = await Item.findById(response.body._id);
+        expect(item.price).toBe(1);
+        expect(item.description).toBe("test");
+        expect(item.tags).toEqual(["tag"]);
+        expect(item.images.length).toBe(1);
+    });
+});
+
+describe("PATCH /api/items/:id", () => {
+    var mCookie;
+    var itemId;
+
+    beforeAll(async () => {
+        const mUser = { username: "mUser", password: "mUser" };
+        await newUser(mUser);
+        mCookie = await login(mUser);
+
+        let item = await new Item({
+            owner: user._id,
+            description: "test",
+        }).save();
+        itemId = `${item._id}`;
+    });
+
+    afterAll(async () => {
+        await User.deleteMany({ _id: { $ne: user._id } });
+        await Item.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        let response = await request(app).patch(`/api/items/${itemId}`);
+        expect(response.status).toBe(401);
+    });
+
+    it("should return 204 if item is updated", async () => {
+        let response = await request(app)
+            .patch(`/api/items/${itemId}`)
+            .set("Cookie", cookie)
+            .send({
+                price: 1,
+                description: "test2",
+                tags: ["tag", "tag"],
+                images: [imgDataUrl],
+            });
+        expect(response.status).toBe(204);
+
+        let item = await Item.findById(itemId);
+        expect(item.price).toBe(1);
+        expect(item.description).toBe("test2");
+        expect(item.tags).toEqual(["tag"]);
+        expect(item.images.length).toBe(1);
+
+        response = await request(app)
+            .patch(`/api/items/${itemId}`)
+            .set("Cookie", mCookie)
+            .send({ price: 2 });
+        expect(response.status).toBe(400);
+    });
+});
+
+describe("DELETE /api/items/:id", () => {
+    var mCookie;
+    var itemId;
+
+    beforeAll(async () => {
+        const mUser = { username: "mUser", password: "mUser" };
+        await newUser(mUser);
+        mCookie = await login(mUser);
+
+        let item = await new Item({
+            owner: user._id,
+            description: "test",
+        }).save();
+        itemId = `${item._id}`;
+    });
+
+    afterAll(async () => {
+        await User.deleteMany({ _id: { $ne: user._id } });
+        await Item.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        let response = await request(app).delete(`/api/items/${itemId}`);
+        expect(response.status).toBe(401);
+    });
+
+    it("should return 204 if item is deleted", async () => {
+        let response = await request(app)
+            .delete(`/api/items/${itemId}`)
+            .set("Cookie", cookie);
+        expect(response.status).toBe(204);
+
+        let item = await Item.findById(itemId);
+        expect(item).toBe(null);
+
+        response = await request(app)
+            .delete(`/api/items/${itemId}`)
+            .set("Cookie", mCookie);
+        expect(response.status).toBe(400);
     });
 });

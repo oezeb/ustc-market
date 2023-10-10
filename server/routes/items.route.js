@@ -1,7 +1,10 @@
 const router = require("express").Router();
+const sharp = require("sharp");
 
+const config = require("../config");
 const Item = require("../models/item.model");
 const auth = require("../middleware/auth");
+const { resizeImages } = require("../middleware/items");
 
 router.use(auth);
 
@@ -80,6 +83,51 @@ router.route("/tags").get((req, res) => {
 router.route("/:id").get((req, res) => {
     Item.findById(req.params.id)
         .then((item) => res.json(item))
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+// POST /api/items
+// Creates a new item for the current user
+// For images use HTTP DataURLs
+router.route("/").post(resizeImages, (req, res) => {
+    new Item({
+        owner: req.userId,
+        price: req.body.price,
+        description: req.body.description,
+        sold: req.body.sold,
+        tags: [...new Set(req.body?.tags || [])], // Remove duplicates
+        images: req.body?.images,
+    })
+        .save()
+        .then((item) => res.status(201).json(item))
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+// PATCH /api/items/:id
+// Updates current user's item with specified id
+// For images use HTTP DataURLs
+router.route("/:id").patch(resizeImages, (req, res) => {
+    Item.findOneAndUpdate(
+        { _id: req.params.id, owner: req.userId },
+        {
+            price: req.body.price,
+            description: req.body.description,
+            sold: req.body.sold,
+            tags: [...new Set(req.body?.tags || [])], // Remove duplicates
+            images: req.body?.images,
+        }
+    )
+        .then((item) => item || Promise.reject(new Error("Item not found")))
+        .then((item) => res.status(204).json())
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+// DELETE /api/items/:id
+// Deletes current user's item with specified id
+router.route("/:id").delete((req, res) => {
+    Item.findOneAndDelete({ _id: req.params.id, owner: req.userId })
+        .then((item) => item || Promise.reject(new Error("Item not found")))
+        .then((item) => res.status(204).json())
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

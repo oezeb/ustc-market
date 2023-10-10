@@ -118,7 +118,11 @@ router.route("/:id").patch((req, res) => {
     )
         .then((item) => {
             if (!item) return Promise.reject(new Error("Item not found"));
-            item.images?.forEach((image) => fs.unlinkSync(image));
+
+            item.images?.forEach((image) => {
+                if (fs.existsSync(image)) fs.unlinkSync(image);
+            });
+
             return res.status(204).json();
         })
         .catch((err) => res.status(400).json({ error: err.message }));
@@ -130,7 +134,9 @@ router.route("/:id").delete(async (req, res) => {
     Item.findOneAndDelete({ _id: req.params.id, owner: req.userId })
         .then((item) => {
             if (!item) return Promise.reject(new Error("Item not found"));
-            item.images?.forEach((image) => fs.unlinkSync(image));
+            item.images?.forEach((image) => {
+                if (fs.existsSync(image)) fs.unlinkSync(image);
+            });
             return res.status(204).json();
         })
         .catch((err) => res.status(400).json({ error: err.message }));

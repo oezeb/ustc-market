@@ -26,7 +26,8 @@ router.route("/").patch(async (req, res) => {
     })
         .then((user) => {
             if (!user) return Promise.reject(new Error("User not found"));
-            if (user.avatar) fs.unlinkSync(user.avatar);
+            if (user.avatar && fs.existsSync(user.avatar))
+                fs.unlinkSync(user.avatar);
 
             return res.status(204).json();
         })

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
 const bcrypt = require("bcryptjs");
+
 const app = require("../app");
 const config = require("../config");
 const User = require("../models/user.model");
@@ -21,7 +22,7 @@ const newUser = async (user) =>
     }).save();
 
 const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");
-const imgDataUrl = `data:image/jpeg;base64,${tuxImage}`;
+const imgDataURL = `data:image/jpeg;base64,${tuxImage}`;
 const user = {
     username: "test",
     password: "test",
@@ -267,7 +268,7 @@ describe("POST /api/items", () => {
                 price: 1,
                 description: "test",
                 tags: ["tag", "tag"],
-                images: [imgDataUrl],
+                images: [imgDataURL],
             });
         expect(response.status).toBe(201);
         expect(response.body._id).toBeDefined();
@@ -318,7 +319,7 @@ describe("PATCH /api/items/:id", () => {
                 price: 1,
                 description: "test2",
                 tags: ["tag", "tag"],
-                images: [imgDataUrl],
+                images: [imgDataURL],
             });
         expect(response.status).toBe(204);
 

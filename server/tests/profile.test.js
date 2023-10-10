@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
 const bcrypt = require("bcryptjs");
+
 const app = require("../app");
 const config = require("../config");
+const { encrypt } = require("../encryption");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
-const { encrypt } = require("../encryption");
-const fs = require("fs");
 
 const login = async (user) => {
     const response = await request(app)
@@ -37,12 +37,13 @@ const newMessage = async (sender, receiver, item) =>
         content: encrypt(`${sender.username} to ${receiver.username}`),
     }).save();
 
+const tuxImage = require("fs").readFileSync("./tests/tux.svg.png", "base64");
+const imgDataURL = `data:image/jpeg;base64,${tuxImage}`;
 const user = {
     username: "test",
     password: "test",
 };
 var cookie;
-const tuxPath = "./tests/tux.svg.png";
 
 beforeAll(async () => {
     await mongoose.connect(config.MONDODB_TEST_URI);
@@ -86,15 +87,15 @@ describe("PATCH /api/profile", () => {
         let response = await request(app)
             .patch("/api/profile")
             .set("Cookie", cookie)
-            .attach("avatar", tuxPath)
-            .field("name", "test")
-            .field("password", newpassword);
+            .send({
+                name: "test",
+                password: newpassword,
+                avatar: imgDataURL,
+            });
         expect(response.status).toBe(204);
         const mUser = await User.findById(user._id);
         expect(mUser.name).toBe("test");
-        expect(mUser.avatar).toBe(`${config.avatarsDir}/${user._id}.jpeg`);
-        expect(fs.existsSync(mUser.avatar)).toBe(true);
-        fs.unlinkSync(mUser.avatar);
+        expect(mUser.avatar).toBeDefined();
 
         user.password = newpassword;
         cookie = await login(user);

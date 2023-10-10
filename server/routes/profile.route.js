@@ -1,11 +1,9 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const sharp = require("sharp");
 
-const config = require("../config");
 const { encrypt, decrypt } = require("../encryption");
 const auth = require("../middleware/auth");
-const { uploadImage, resizeImage } = require("../middleware/image");
+const { resizeAvatar } = require("../middleware/profile");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");
@@ -22,28 +20,15 @@ router.route("/").get((req, res) => {
 
 // PATCH /api/profile
 // Updates current user (name, avatar, password)
-router
-    .route("/")
-    .patch(uploadImage.single("avatar"), resizeImage, async (req, res) => {
-        try {
-            const user = await User.findById(req.userId);
-            if (req.body.name) user.name = req.body.name;
-            if (req.file) {
-                const filename = `${config.avatarsDir}/${req.userId}.jpeg`;
-                await sharp(req.file.buffer).toFile(filename);
-                user.avatar = filename;
-            }
-            if (req.body.password) {
-                const hash = await bcrypt.hash(req.body.password, 10);
-                user.password = hash;
-            }
-
-            await user.save();
-            res.status(204).json();
-        } catch (err) {
-            res.status(400).json({ error: err.message });
-        }
-    });
+router.route("/").patch(resizeAvatar, async (req, res) => {
+    User.findByIdAndUpdate(req.userId, {
+        name: req.body.name,
+        avatar: req.body.avatar,
+        password: await bcrypt.hash(req.body.password || "", 10),
+    })
+        .then(() => res.status(204).json())
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
 
 const decryptMessages = (messages) => {
     for (let msg of messages) msg.content = decrypt(msg.content);

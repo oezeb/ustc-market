@@ -10,16 +10,17 @@ router.use(auth);
 
 // GET /api/items
 // Returns items matching query
-// Query parameters include: owner, price, priceMin, priceMax, tags, sold, text,
+// Query parameters include: owner, price, sold, tags, priceMin, priceMax, text,
 // orderBy, order, offset, limit, fields
 router.route("/").get((req, res) => {
     const query = {};
+
     if (req.query.owner) query.owner = req.query.owner;
     if (req.query.price) query.price = req.query.price;
+    if (req.query.sold) query.sold = req.query.sold;
+    if (req.query.tags) query.tags = { $in: req.query.tags.split(",") };
     if (req.query.priceMin) query.price = { $gte: req.query.priceMin };
     if (req.query.priceMax) query.price = { $lte: req.query.priceMax };
-    if (req.query.tags) query.tags = { $in: req.query.tags.split(",") };
-    if (req.query.sold) query.sold = req.query.sold;
     if (req.query.text) query.$text = { $search: req.query.text };
 
     const orderBy = req.query.orderBy || "updatedAt";

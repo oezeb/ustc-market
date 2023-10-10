@@ -153,16 +153,18 @@ describe("GET /api/items", () => {
 
     it("custom sort", async () => {
         let response = await request(app)
-            .get("/api/items?orderBy=price&order=asc")
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ orderBy: "price", order: "asc" });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(2);
         expect(response.body[0]._id).toBe(user1Item._id);
         expect(response.body[1]._id).toBe(user2Item._id);
 
         response = await request(app)
-            .get("/api/items?orderBy=price&order=desc")
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ orderBy: "price", order: "desc" });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(2);
         expect(response.body[0]._id).toBe(user2Item._id);
@@ -171,8 +173,9 @@ describe("GET /api/items", () => {
 
     it("limit, offset and fields filtering", async () => {
         let response = await request(app)
-            .get("/api/items?offset=1&limit=1&fields=description,price")
-            .set("Cookie", cookie);
+            .get("/api/items")
+            .set("Cookie", cookie)
+            .query({ offset: 1, limit: 1, fields: "description,price" });
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(1);
         expect(new Set(Object.keys(response.body[0]))).toEqual(

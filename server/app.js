@@ -5,6 +5,7 @@ const authRouter = require("./routes/auth.route");
 const profileRouter = require("./routes/profile.route");
 const usersRouter = require("./routes/users.route");
 const itemsRouter = require("./routes/items.route");
+const messagesRouter = require("./routes/messages.route");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/items", itemsRouter);
+app.use("/api/messages", messagesRouter);
 
 app.use("/api/uploads", express.static("uploads"));
 

@@ -22,6 +22,6 @@ app.use("/api/items", itemsRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/upload", uploadRouter);
 
-app.use(`/api/uploads`, express.static(config.uploadsDir));
+app.use(`/api/uploads`, express.static(config.uploadsDir, { maxAge: "30d" }));
 
 module.exports = app;

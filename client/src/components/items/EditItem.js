@@ -48,7 +48,7 @@ function EditItem() {
 
     const handleSubmit = (formData) => {
         formData.append("replaceImages", true);
-        fetch(apiRoutes.profileItems + `/${id}`, {
+        fetch(apiRoutes.items + `/${id}`, {
             method: "PATCH",
             body: formData,
         })

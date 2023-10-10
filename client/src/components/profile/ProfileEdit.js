@@ -58,7 +58,7 @@ function ProfileEdit() {
                 return;
             }
 
-            const res = login(user.username, password);
+            const res = await login(user.username, password);
             if (!res) {
                 setMsg("Incorrect password");
                 setOpen(true);

@@ -12,7 +12,7 @@ function AddItem() {
     const [open, setOpen] = React.useState(false); // snackbar
 
     const handleSubmit = (formData) => {
-        fetch(apiRoutes.profileItems, {
+        fetch(apiRoutes.items, {
             method: "POST",
             body: formData,
         })

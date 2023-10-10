@@ -46,11 +46,11 @@ function EditItem() {
             .catch((err) => console.error(err));
     }, [id]);
 
-    const handleSubmit = (formData) => {
-        formData.append("replaceImages", true);
+    const handleSubmit = (data) => {
         fetch(apiRoutes.items + `/${id}`, {
             method: "PATCH",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
         })
             .then((res) => {
                 if (res.ok) {

@@ -35,12 +35,31 @@ function ProfileEdit() {
         reader.readAsDataURL(file);
     };
 
+    const uploadAvatar = async (avatar) => {
+        const formData = new FormData();
+        formData.append("image", avatar);
+
+        const res = await fetch(apiRoutes.uploadImages, {
+            method: "POST",
+            body: formData,
+        });
+        const data = await res.json();
+        return data[0];
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const requestForm = new FormData();
 
-        requestForm.set("name", formData.get("name").trim());
+        const data = {};
+        data.avatar = await uploadAvatar(formData.get("avatar"));
+        if (data.avatar === undefined) {
+            setMsg("Please upload a profile picture");
+            setOpen(true);
+            return;
+        }
+
+        data.name = formData.get("name").trim();
 
         const password = formData.get("password").trim();
         const newPassword = formData.get("newPassword").trim();
@@ -65,15 +84,13 @@ function ProfileEdit() {
                 return;
             }
 
-            requestForm.set("password", newPassword);
+            data.password = newPassword;
         }
-
-        const avatar = formData.get("avatar");
-        if (avatar) requestForm.append("avatar", avatar);
 
         fetch(apiRoutes.profile, {
             method: "PATCH",
-            body: requestForm,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
         })
             .then((res) => {
                 if (res.ok) {

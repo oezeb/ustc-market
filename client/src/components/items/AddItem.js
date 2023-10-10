@@ -11,10 +11,11 @@ function AddItem() {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false); // snackbar
 
-    const handleSubmit = (formData) => {
+    const handleSubmit = (data) => {
         fetch(apiRoutes.items, {
             method: "POST",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
         })
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => navigate("/items/" + data._id))

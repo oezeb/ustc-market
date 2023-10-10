@@ -15,4 +15,7 @@ export const apiRoutes = {
 
     // users
     users: "/api/users",
+
+    // upload
+    uploadImages: "/api/upload/images",
 };

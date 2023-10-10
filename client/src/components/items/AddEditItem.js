@@ -2,7 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Checkbox, FormControlLabel } from "@mui/material";
+import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
@@ -21,6 +21,7 @@ import { apiRoutes } from "api";
 function AddEditItem(props) {
     const { showSoldCheckbox } = props;
     const [images, setImages] = React.useState(props.images || []);
+    const [snackbarMsg, setSnackbarMsg] = React.useState(null);
 
     const dataURLtoBlob = (dataURL) => {
         const bytes = atob(dataURL.split(",")[1]);
@@ -31,28 +32,44 @@ function AddEditItem(props) {
         return new Blob([ia], { type: mime });
     };
 
-    const handleSubmit = (event) => {
+    const uploadImages = async (images) => {
+        const formData = new FormData();
+        images.forEach((image, index) => {
+            formData.append("image", dataURLtoBlob(image));
+        });
+        try {
+            const res = await fetch(apiRoutes.uploadImages, {
+                method: "POST",
+                body: formData,
+            });
+            return res.ok ? await res.json() : null;
+        } catch (err) {
+            console.error(err);
+            return null;
+        }
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+        if (!props.onSubmit) return;
 
-        const sold = formData.get("sold") === "on";
-        formData.set("sold", sold);
+        const data = {};
+        data.images = await uploadImages(images);
+        if (data.images === null) {
+            setSnackbarMsg("Error uploading images");
+            return;
+        }
 
-        let tags = formData
+        data.price = formData.get("price");
+        data.description = formData.get("description");
+        data.sold = formData.get("sold") === "on";
+        data.tags = formData
             .get("tags")
             .split(/\W+/)
             .filter((tag) => tag !== "");
-        formData.set("tags", JSON.stringify(tags));
 
-        images.forEach((image, index) => {
-            formData.append(
-                "images",
-                dataURLtoBlob(image),
-                `image${index}.jpeg`
-            );
-        });
-
-        if (props.onSubmit) props.onSubmit(formData);
+        props.onSubmit(data);
     };
 
     return (
@@ -101,6 +118,15 @@ function AddEditItem(props) {
                 Submit
             </Button>
             <Toolbar />
+            <Snackbar
+                open={snackbarMsg !== null}
+                autoHideDuration={5000}
+                onClose={() => setSnackbarMsg(null)}
+            >
+                <Alert severity="error" sx={{ width: "100%" }}>
+                    {snackbarMsg}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

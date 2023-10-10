@@ -262,6 +262,7 @@ const ItemImageList = (props) => {
 const ItemImage = (props) => {
     const { item, showOwner } = props;
     const [owner, setOwner] = React.useState(undefined);
+    const [imageError, setImageError] = React.useState(false);
 
     React.useEffect(() => {
         if (item)
@@ -274,6 +275,10 @@ const ItemImage = (props) => {
                 });
     }, [item]);
 
+    const onImageError = (event) => {
+        setImageError(true);
+    };
+
     if (item)
         return (
             <ImageListItem
@@ -281,7 +286,7 @@ const ItemImage = (props) => {
                 to={`/items/${item._id}`}
                 sx={{ color: "inherit", textDecoration: "inherit" }}
             >
-                {item.images && item.images.length > 0 ? (
+                {!imageError && item.images && item.images.length > 0 ? (
                     <img
                         src={`/api/${item.images[0]}`}
                         style={{
@@ -290,6 +295,7 @@ const ItemImage = (props) => {
                         }}
                         loading="lazy"
                         alt="item"
+                        onError={onImageError}
                     />
                 ) : (
                     <Box

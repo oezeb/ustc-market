@@ -11,19 +11,13 @@ import Items from "./items/Items";
 import Profile from "./profile/Profile";
 import ProfileEdit from "./profile/ProfileEdit";
 import Users from "./users/Users";
+import SnackbarProvider from "./SnackbarProvider";
 
-function App() {
-    return (
+const App = () => (
+    <SnackbarProvider>
         <AuthProvider>
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <RequireAuth>
-                            <Layout />
-                        </RequireAuth>
-                    }
-                >
+                <Route path="/" element={<RequireAuth children={<Layout />} />}>
                     <Route index element={<Home />} />
                     <Route path="/messages" element={<div>Messages</div>} />
                     <Route path="/profile" element={<Profile />} />
@@ -36,7 +30,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
             </Routes>
         </AuthProvider>
-    );
-}
+    </SnackbarProvider>
+);
 
 export default App;

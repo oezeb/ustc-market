@@ -7,6 +7,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "components/auth/AuthProvider";
+import { useSnackbar } from "components/SnackbarProvider";
 
 const Login = () => {
     const auth = useAuth();
@@ -22,7 +23,7 @@ const Login = () => {
         setLoading(true);
         let user = await auth.login(username, password);
         setLoading(false);
-        if (user) navigate("/");
+        if (user) navigate("/", { replace: true });
     };
 
     return (

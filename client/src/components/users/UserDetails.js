@@ -3,9 +3,8 @@ import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import ItemListContent from "components/items/itemlist/ItemListContent";
 import React from "react";
-
-import { ItemListContent } from "components/items/ItemList";
 
 function UserDetails(props) {
     const { id } = props;

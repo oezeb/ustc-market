@@ -11,8 +11,8 @@ import { Link } from "react-router-dom";
 
 import { apiRoutes } from "api";
 import { useAuth } from "components/auth/AuthProvider";
-import { FullScreenImageDialog } from "components/items/ItemDetails";
-import { ItemListContent } from "components/items/ItemList";
+import ItemListContent from "components/items/itemlist/ItemListContent";
+import ImageBackdrop from "components/ImageBacdrop";
 
 function Profile() {
     const { user } = useAuth();
@@ -67,7 +67,7 @@ function Profile() {
             <ItemListContent owner={user._id} />
             <Toolbar />
             {user?.avatar && (
-                <FullScreenImageDialog
+                <ImageBackdrop
                     open={open}
                     setOpen={setOpen}
                     imageURL={`/api/${user.avatar}`}

@@ -1,7 +1,7 @@
 import { LinearProgress } from "@mui/material";
+import { useSnackbar } from "components/SnackbarProvider";
 import React from "react";
 import { Navigate } from "react-router-dom";
-const log = require("loglevel");
 
 const { apiRoutes } = require("api");
 
@@ -9,6 +9,7 @@ const AuthContext = React.createContext();
 
 function AuthProvider(props) {
     const [user, setUser] = React.useState(undefined);
+    const { showSnackbar } = useSnackbar();
 
     const updateUser = async () => {
         let user = null;
@@ -16,7 +17,8 @@ function AuthProvider(props) {
             const res = await fetch(apiRoutes.profile);
             if (res.ok) user = await res.json();
         } catch (error) {
-            log.error(error);
+            console.error(error);
+            showSnackbar("Something went wrong", "error", 5000);
         }
 
         setUser(user);
@@ -34,8 +36,10 @@ function AuthProvider(props) {
             });
 
             if (res.ok) user = await updateUser();
+            else showSnackbar("Invalid username or password", "error", 5000);
         } catch (error) {
-            log.error(error);
+            console.error(error);
+            showSnackbar("Something went wrong", "error", 5000);
         }
 
         return user;
@@ -47,6 +51,7 @@ function AuthProvider(props) {
         });
 
         if (res.ok) setUser(null);
+        else showSnackbar("Unable to logout", "error", 5000);
     };
 
     React.useEffect(() => {

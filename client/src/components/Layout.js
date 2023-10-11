@@ -1,46 +1,76 @@
 import AdbIcon from "@mui/icons-material/Adb";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import HomeIcon from "@mui/icons-material/Home";
 import MessageIcon from "@mui/icons-material/Message";
 import PersonIcon from "@mui/icons-material/Person";
-import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Badge from "@mui/material/Badge";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 function Layout() {
-    const path = useLocation().pathname;
-    const [value, setValue] = React.useState(
-        path === "/" ? path : path.replace(/\/$/, "")
-    );
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [value, setValue] = React.useState(null);
+
+    React.useEffect(() => {
+        switch (location.pathname) {
+            case "/":
+                setValue("/");
+                break;
+            case "/items/add":
+            case "/items/add/":
+                setValue("/items/add");
+                break;
+            case "/profile":
+            case "/profile/":
+                setValue("/profile");
+                break;
+            default:
+                setValue(null);
+        }
+    }, [location]);
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar color="default">
                 <Toolbar>
-                    <Button color="inherit" component={Link} to="/">
-                        <AdbIcon sx={{ mr: 1 }} />
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="a"
-                            sx={{
-                                mr: 2,
-                                fontFamily: "monospace",
-                                fontWeight: 700,
-                                letterSpacing: ".3rem",
-                                color: "inherit",
-                                textDecoration: "none",
-                            }}
+                    {value ? (
+                        <Button color="inherit" component={Link} to="/">
+                            <AdbIcon sx={{ mr: 1 }} />
+                            <Typography
+                                variant="h6"
+                                noWrap
+                                sx={{
+                                    mr: 2,
+                                    fontFamily: "monospace",
+                                    fontWeight: 700,
+                                    letterSpacing: ".3rem",
+                                    color: "inherit",
+                                    textDecoration: "none",
+                                }}
+                            >
+                                LOGO
+                            </Typography>
+                        </Button>
+                    ) : (
+                        <IconButton
+                            color="inherit"
+                            onClick={() => navigate(-1)}
+                            sx={{ mr: 2 }}
                         >
-                            LOGO
-                        </Typography>
-                    </Button>
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                    )}
                     <Box sx={{ flexGrow: 1 }} />
                     <IconButton
                         color="inherit"

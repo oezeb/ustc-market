@@ -10,8 +10,6 @@ export const apiRoutes = {
 
     // profile
     profile: "/api/profile",
-    profileItems: "/api/profile/items",
-    profileMessages: "/api/profile/messages",
 
     // users
     users: "/api/users",

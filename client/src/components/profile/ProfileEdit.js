@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 import { apiRoutes } from "api";
 import { useAuth } from "components/auth/AuthProvider";
-import { FullScreenImageDialog } from "components/items/ItemDetails";
+import ImageBackdrop from "components/ImageBacdrop";
 
 function ProfileEdit() {
     const { user, login, updateUser } = useAuth();
@@ -186,7 +186,7 @@ function ProfileEdit() {
                     {msg}
                 </Alert>
             </Snackbar>
-            <FullScreenImageDialog
+            <ImageBackdrop
                 open={openAvatar}
                 setOpen={setOpenAvatar}
                 imageURL={image}

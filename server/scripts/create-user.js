@@ -40,9 +40,9 @@ if (!username || !password) {
 }
 
 const mongoose = require("mongoose");
-const config = require("./config");
+const config = require("../config");
 const bcrypt = require("bcryptjs");
-const User = require("./models/user.model");
+const User = require("../models/user.model");
 
 mongoose
     .connect(config.MONGODB_URI)

@@ -41,6 +41,7 @@ git clone https://github.com/oezeb/alum-market.git
 
 ### Messaging
 
+- [x] Messages should be private and encrypted
 - [ ] Users can send messages to other users regarding a listing
 - [ ] The owner of a listing cannot initiate a conversation with a user who has not contacted them first about the listing
 - [ ] Use socket.io to allow for real-time messaging

@@ -20,12 +20,12 @@ const decryptMessage = (msg) => {
 router.route("/").get((req, res) => {
     const query = {
         $or: [{ sender: req.userId }, { receiver: req.userId }],
+        blocked: req.query.blocked || false,
     };
 
     if (req.query.sender) query.sender = req.query.sender;
     if (req.query.receiver) query.receiver = req.query.receiver;
     if (req.query.item) query.item = req.query.item;
-    if (req.query.blocked) query.blocked = req.query.blocked;
     if (req.query.read) query.read = req.query.read;
     if (req.query.otherUser) {
         query.$or[0].receiver = req.query.otherUser;
@@ -33,7 +33,7 @@ router.route("/").get((req, res) => {
     }
 
     const orderBy = req.query.orderBy || "createdAt";
-    const order = req.query.order || "desc";
+    const order = req.query.order || "asc";
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || undefined;
     const fields = req.query.fields
@@ -54,12 +54,12 @@ router.route("/").get((req, res) => {
 router.route("/count").get((req, res) => {
     const query = {
         $or: [{ sender: req.userId }, { receiver: req.userId }],
+        blocked: req.query.blocked || false,
     };
 
     if (req.query.sender) query.sender = req.query.sender;
     if (req.query.receiver) query.receiver = req.query.receiver;
     if (req.query.item) query.item = req.query.item;
-    if (req.query.blocked) query.blocked = req.query.blocked;
     if (req.query.read) query.read = req.query.read;
     if (req.query.otherUser) {
         query.$or[0].receiver = req.query.otherUser;

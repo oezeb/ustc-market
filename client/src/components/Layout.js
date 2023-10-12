@@ -16,14 +16,17 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "./auth/AuthProvider";
+import { apiRoutes } from "api";
 
 function Layout() {
-    const location = useLocation();
+    const path = useLocation().pathname;
     const navigate = useNavigate();
     const [value, setValue] = React.useState(null);
 
+    const hideMessageIcon = path.startsWith("/messages");
     React.useEffect(() => {
-        switch (location.pathname) {
+        switch (path) {
             case "/":
                 setValue("/");
                 break;
@@ -38,7 +41,7 @@ function Layout() {
             default:
                 setValue(null);
         }
-    }, [location]);
+    }, [path]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -72,22 +75,19 @@ function Layout() {
                         </IconButton>
                     )}
                     <Box sx={{ flexGrow: 1 }} />
-                    <IconButton
-                        color="inherit"
-                        size="small"
-                        component={Link}
-                        to="/messages"
-                    >
-                        <Badge badgeContent={100} color="error">
-                            <MessageIcon />
-                        </Badge>
-                    </IconButton>
+                    {!hideMessageIcon && <MessageIconBadge />}
                 </Toolbar>
             </AppBar>
             <Outlet />
             <Paper
-                sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-                elevation={3}
+                sx={{
+                    position: "fixed",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    elevation: 3,
+                }}
             >
                 <BottomNavigation
                     showLabels
@@ -122,5 +122,30 @@ function Layout() {
         </Box>
     );
 }
+
+const MessageIconBadge = () => {
+    const { user } = useAuth();
+    const [count, setCount] = React.useState(0);
+
+    React.useEffect(() => {
+        fetch(apiRoutes.messageCount + `?receiver=${user._id}&read=false`)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .then((data) => setCount(data))
+            .catch((err) => console.log(err));
+    }, [user]);
+
+    return (
+        <IconButton
+            color="inherit"
+            size="small"
+            component={Link}
+            to="/messages"
+        >
+            <Badge badgeContent={count} color="error">
+                <MessageIcon />
+            </Badge>
+        </IconButton>
+    );
+};
 
 export default Layout;

@@ -21,8 +21,7 @@ const ImageBackdrop = ({ open, setOpen, imageURL }) => (
             loading="lazy"
             src={imageURL}
             alt="item"
-            style={{ maxWidth: "100%" }}
-            objectFit="contain"
+            style={{ maxWidth: "100%", objectFit: "contain" }}
         />
     </Backdrop>
 );

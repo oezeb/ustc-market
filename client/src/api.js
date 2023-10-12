@@ -16,4 +16,8 @@ export const apiRoutes = {
 
     // upload
     uploadImages: "/api/upload/images",
+
+    // messages
+    messages: "/api/messages",
+    messageCount: "/api/messages/count",
 };

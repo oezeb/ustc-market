@@ -54,7 +54,7 @@ const OwnerProfile = ({ ownerId, itemId }) => {
             </Box>
             <Chip
                 component={Link}
-                to={`/messages/${owner._id}/${itemId}`}
+                to={`/messages/${itemId}/${owner._id}`}
                 disabled={user._id === owner._id}
                 onClick={() => {}}
                 icon={<ForumIcon fontSize="small" />}

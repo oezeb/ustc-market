@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { apiRoutes } from "api";
 import ItemListContent from "components/items/itemlist/ItemListContent";
 import React from "react";
 
@@ -11,7 +12,7 @@ function UserDetails(props) {
     const [user, setUser] = React.useState(undefined);
 
     React.useEffect(() => {
-        fetch(`/api/users/${id}`)
+        fetch(apiRoutes.users + `/${id}`)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((user) => setUser(user))
             .catch((err) => console.error(err));

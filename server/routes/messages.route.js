@@ -15,7 +15,7 @@ const decryptMessage = (msg) => {
 
 // GET /api/messages
 // Returns current user's messages matching query
-// Query parameters include: sender, receiver, item, blocked, otherUser,
+// Query parameters include: sender, receiver, item, blocked, read, otherUser,
 // orderBy, order, offset, limit, fields
 router.route("/").get((req, res) => {
     const query = {
@@ -26,6 +26,7 @@ router.route("/").get((req, res) => {
     if (req.query.receiver) query.receiver = req.query.receiver;
     if (req.query.item) query.item = req.query.item;
     if (req.query.blocked) query.blocked = req.query.blocked;
+    if (req.query.read) query.read = req.query.read;
     if (req.query.otherUser) {
         query.$or[0].receiver = req.query.otherUser;
         query.$or[1].sender = req.query.otherUser;
@@ -49,7 +50,7 @@ router.route("/").get((req, res) => {
 
 // GET /api/messages/count
 // Returns number of current user's messages matching query
-// Query parameters include: sender, receiver, item, blocked, otherUser
+// Query parameters include: sender, receiver, item, blocked, read, otherUser
 router.route("/count").get((req, res) => {
     const query = {
         $or: [{ sender: req.userId }, { receiver: req.userId }],
@@ -59,6 +60,7 @@ router.route("/count").get((req, res) => {
     if (req.query.receiver) query.receiver = req.query.receiver;
     if (req.query.item) query.item = req.query.item;
     if (req.query.blocked) query.blocked = req.query.blocked;
+    if (req.query.read) query.read = req.query.read;
     if (req.query.otherUser) {
         query.$or[0].receiver = req.query.otherUser;
         query.$or[1].sender = req.query.otherUser;
@@ -124,6 +126,21 @@ router.route("/").post(async (req, res) => {
     })
         .save()
         .then((msg) => res.json(decryptMessage(msg)))
+        .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+// PATCH /api/messages/:id
+// Updates current user's message (read) with specified id
+router.route("/:id").patch((req, res) => {
+    Message.findOneAndUpdate(
+        {
+            _id: req.params.id,
+            receiver: req.userId,
+        },
+        { read: req.body.read }
+    )
+        .then((msg) => msg || Promise.reject(new Error("Message not found")))
+        .then((msg) => res.status(204).json())
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

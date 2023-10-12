@@ -258,3 +258,49 @@ describe("POST /api/messages", () => {
         expect(response.body.blocked).toBe(true);
     });
 });
+
+describe("PATCH /api/messages/:id", () => {
+    const mUser = { username: "mUser", password: "mUser" };
+    var itemId, mItemId;
+
+    beforeAll(async () => {
+        model = await newUser(mUser);
+        mUser._id = `${model._id}`;
+
+        model = await newItem(user);
+        itemId = `${model._id}`;
+
+        model = await newItem(mUser);
+        mItemId = `${model._id}`;
+    });
+
+    afterAll(async () => {
+        await User.deleteMany({ _id: { $ne: user._id } });
+        await Item.deleteMany({});
+        await Message.deleteMany({});
+    });
+
+    it("should return 401 if not logged in", async () => {
+        response = await request(app).patch("/api/messages/123456789012");
+        expect(response.status).toBe(401);
+    });
+
+    it("should return 204 if is the receiver", async () => {
+        msg = await newMessage(mUser, user, { _id: itemId });
+        response = await request(app)
+            .patch(`/api/messages/${msg._id}`)
+            .set("Cookie", cookie)
+            .send({ read: true });
+        console.log(response.body);
+        expect(response.status).toBe(204);
+    });
+
+    it("should return 400 if is not the receiver", async () => {
+        msg = await newMessage(user, mUser, { _id: mItemId });
+        response = await request(app)
+            .patch(`/api/messages/${msg._id}`)
+            .set("Cookie", cookie)
+            .send({ read: true });
+        expect(response.status).toBe(400);
+    });
+});

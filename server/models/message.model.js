@@ -7,6 +7,7 @@ const messageSchema = new Schema(
         item: { type: Schema.Types.ObjectId, ref: "Item", required: true },
         content: { type: String, required: true },
         blocked: { type: Boolean, default: false },
+        read: { type: Boolean, default: false },
     },
     { timestamps: true }
 );

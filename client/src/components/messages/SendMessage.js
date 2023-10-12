@@ -100,8 +100,6 @@ function SendMessage() {
             });
     };
 
-    if (!messages || !otherUser) return null;
-
     const UserAvatar = ({ user, message, ...sxProps }) => (
         <Avatar
             src={user.avatar ? `/api/${user.avatar}` : undefined}
@@ -130,28 +128,36 @@ function SendMessage() {
                 <ItemView itemId={itemId} />
             </Box>
             <List dense disablePadding>
-                {messages.map((msg, index) => (
-                    <ListItem key={index} alignItems="flex-start">
-                        <ListItemAvatar>
-                            <UserAvatar user={otherUser} message={msg} />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={msg.content}
-                            secondary={new Date(msg.createdAt).toLocaleString()}
-                            sx={{
-                                bgcolor:
-                                    msg.sender === user._id
-                                        ? "primary.main"
-                                        : "grey.300",
-                                borderRadius: 2.5,
-                                padding: 1,
-                            }}
-                        />
-                        <ListItemAvatar>
-                            <UserAvatar user={user} message={msg} ml="auto" />
-                        </ListItemAvatar>
-                    </ListItem>
-                ))}
+                {messages &&
+                    otherUser &&
+                    messages.map((msg, index) => (
+                        <ListItem key={index} alignItems="flex-start">
+                            <ListItemAvatar>
+                                <UserAvatar user={otherUser} message={msg} />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={msg.content}
+                                secondary={new Date(
+                                    msg.createdAt
+                                ).toLocaleString()}
+                                sx={{
+                                    bgcolor:
+                                        msg.sender === user._id
+                                            ? "primary.main"
+                                            : "grey.300",
+                                    borderRadius: 2.5,
+                                    padding: 1,
+                                }}
+                            />
+                            <ListItemAvatar>
+                                <UserAvatar
+                                    user={user}
+                                    message={msg}
+                                    ml="auto"
+                                />
+                            </ListItemAvatar>
+                        </ListItem>
+                    ))}
             </List>
             <Box
                 sx={{
@@ -179,13 +185,8 @@ function SendMessage() {
                         <SendIcon />
                     </IconButton>
                 </Box>
-                <Toolbar />
             </Box>
-            <Box>
-                <Toolbar />
-                <Toolbar />
-            </Box>
-            <div ref={bottomRef} />
+            <Toolbar ref={bottomRef} />
         </Box>
     );
 }

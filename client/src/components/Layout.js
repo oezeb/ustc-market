@@ -21,107 +21,53 @@ import { apiRoutes } from "api";
 
 function Layout() {
     const path = useLocation().pathname;
-    const navigate = useNavigate();
     const [value, setValue] = React.useState(null);
-
     const hideMessageIcon = path.startsWith("/messages");
-    React.useEffect(() => {
-        switch (path) {
-            case "/":
-                setValue("/");
-                break;
-            case "/items/add":
-            case "/items/add/":
-                setValue("/items/add");
-                break;
-            case "/profile":
-            case "/profile/":
-                setValue("/profile");
-                break;
-            default:
-                setValue(null);
-        }
-    }, [path]);
+    const hideBottomBar = path.match(/^\/messages\/\w+\/\w+\/?$/); // send message page
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar color="default">
                 <Toolbar>
-                    {value ? (
-                        <Button color="inherit" component={Link} to="/">
-                            <AdbIcon sx={{ mr: 1 }} />
-                            <Typography
-                                variant="h6"
-                                noWrap
-                                sx={{
-                                    mr: 2,
-                                    fontFamily: "monospace",
-                                    fontWeight: 700,
-                                    letterSpacing: ".3rem",
-                                    color: "inherit",
-                                    textDecoration: "none",
-                                }}
-                            >
-                                LOGO
-                            </Typography>
-                        </Button>
-                    ) : (
-                        <IconButton
-                            color="inherit"
-                            onClick={() => navigate(-1)}
-                            sx={{ mr: 2 }}
-                        >
-                            <ArrowBackIosIcon />
-                        </IconButton>
-                    )}
+                    {value ? <Logo /> : <BackButton />}
                     <Box sx={{ flexGrow: 1 }} />
                     {!hideMessageIcon && <MessageIconBadge />}
                 </Toolbar>
             </AppBar>
             <Outlet />
-            <Paper
-                sx={{
-                    position: "fixed",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 1,
-                    elevation: 3,
-                }}
-            >
-                <BottomNavigation
-                    showLabels
-                    value={value}
-                    onChange={(event, newValue) => {
-                        setValue(newValue);
-                    }}
-                >
-                    <BottomNavigationAction
-                        component={Link}
-                        label="Home"
-                        to="/"
-                        value="/"
-                        icon={<HomeIcon />}
-                    />
-                    <BottomNavigationAction
-                        component={Link}
-                        to="/items/add"
-                        value="/items/add"
-                        label="Add"
-                        icon={<AddIcon />}
-                    />
-                    <BottomNavigationAction
-                        component={Link}
-                        label="Profile"
-                        to="/profile"
-                        value="/profile"
-                        icon={<PersonIcon />}
-                    />
-                </BottomNavigation>
-            </Paper>
+            {!hideBottomBar && <BottomBar value={value} setValue={setValue} />}
         </Box>
     );
 }
+
+const Logo = () => (
+    <Button color="inherit" component={Link} to="/">
+        <AdbIcon sx={{ mr: 1 }} />
+        <Typography
+            variant="h6"
+            noWrap
+            sx={{
+                mr: 2,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+            }}
+        >
+            LOGO
+        </Typography>
+    </Button>
+);
+
+const BackButton = () => {
+    const navigate = useNavigate();
+    return (
+        <IconButton color="inherit" onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+            <ArrowBackIosIcon />
+        </IconButton>
+    );
+};
 
 const MessageIconBadge = () => {
     const { user } = useAuth();
@@ -145,6 +91,71 @@ const MessageIconBadge = () => {
                 <MessageIcon />
             </Badge>
         </IconButton>
+    );
+};
+
+const BottomBar = ({ value, setValue }) => {
+    const path = useLocation().pathname;
+
+    React.useEffect(() => {
+        switch (path) {
+            case "/":
+                setValue("/");
+                break;
+            case "/items/add":
+            case "/items/add/":
+                setValue("/items/add");
+                break;
+            case "/profile":
+            case "/profile/":
+                setValue("/profile");
+                break;
+            default:
+                setValue(null);
+        }
+    }, [path, setValue]);
+
+    return (
+        <Paper
+            sx={{
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+                elevation: 3,
+            }}
+        >
+            <BottomNavigation
+                showLabels
+                value={value}
+                onChange={(event, newValue) => {
+                    setValue(newValue);
+                }}
+            >
+                <BottomNavigationAction
+                    component={Link}
+                    label="Home"
+                    to="/"
+                    value="/"
+                    icon={<HomeIcon />}
+                />
+                <BottomNavigationAction
+                    component={Link}
+                    to="/items/add"
+                    value="/items/add"
+                    label="Add"
+                    icon={<AddIcon />}
+                />
+                <BottomNavigationAction
+                    component={Link}
+                    label="Profile"
+                    to="/profile"
+                    value="/profile"
+                    icon={<PersonIcon />}
+                />
+            </BottomNavigation>
+        </Paper>
     );
 };
 

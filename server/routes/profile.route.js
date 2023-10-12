@@ -16,14 +16,17 @@ router.route("/").get((req, res) => {
 });
 
 // PATCH /api/profile
-// Updates current user (name, avatar, password)
+// Updates current user (name, avatar, password, blockedUsers)
 // avatar should be first uploaded to the server using /api/upload/images
 router.route("/").patch(async (req, res) => {
-    User.findByIdAndUpdate(req.userId, {
-        name: req.body.name,
-        avatar: req.body.avatar,
-        password: await bcrypt.hash(req.body.password || "", 10),
-    })
+    const data = {};
+    if (req.body.name) data.name = req.body.name;
+    if (req.body.avatar) data.avatar = req.body.avatar;
+    if (req.body.password)
+        data.password = await bcrypt.hash(req.body.password, 10);
+    if (req.body.blockedUsers) data.blockedUsers = req.body.blockedUsers;
+
+    User.findByIdAndUpdate(req.userId, data)
         .then((user) => {
             if (!user) return Promise.reject(new Error("User not found"));
             if (user.avatar && fs.existsSync(user.avatar))

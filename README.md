@@ -45,7 +45,7 @@ git clone https://github.com/oezeb/alum-market.git
 - [x] Users can send messages to other users regarding a listing
 - [x] The owner of a listing cannot initiate a conversation with a user who has not contacted them first about the listing
 - [ ] Use socket.io to allow for real-time messaging
-- [ ] Users can block other users from contacting them
+- [x] Users can block other users from contacting them
 
 ### Privacy
 

@@ -1,5 +1,5 @@
 const help = `
-Usage: node reset-user-password.js [options]
+Usage: node scripts/reset-user-password.js [options]
 Description:
     Reset an user's password in the database
 Options:

@@ -1,5 +1,5 @@
 const help = `
-Usage: node create-user.js [options]
+Usage: node scripts/create-user.js [options]
 Description:
     Creates an user in the database
 Options:

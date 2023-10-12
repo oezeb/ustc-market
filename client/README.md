@@ -10,7 +10,8 @@ git clone https://github.com/oezeb/alum-market.git
 ```
 2. Install dependencies
 ```sh
-cd client && npm install
+cd client
+npm install
 ```
 3. Make sure you have the [server](../server/README.md) running
 4. Start the client

@@ -10,7 +10,8 @@ git clone https://github.com/oezeb/alum-market.git
 ```
 2. Install dependencies
 ```sh
-cd server && npm install
+cd server
+npm install
 ```
 3. Create a `.env` file in the root directory of the project, and add the following environment variables:
 ```sh

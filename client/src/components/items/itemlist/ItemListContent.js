@@ -67,7 +67,7 @@ function ItemListContent(props) {
     );
 }
 
-const ItemListContentSkeleton = ({ itemsPerRow }) => (
+export const ItemListContentSkeleton = ({ itemsPerRow }) => (
     <>
         <Box>
             <ImageList variant="masonry" gap={8} cols={itemsPerRow}>

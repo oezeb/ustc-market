@@ -92,7 +92,13 @@ function SendMessage() {
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
                 setMessage("");
-                setMessages([...messages, data]);
+                if (data.blocked) {
+                    showSnackbar(
+                        "Message not sent: you have been blocked by this user",
+                        "error",
+                        5000
+                    );
+                } else setMessages([...messages, data]);
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -102,6 +108,8 @@ function SendMessage() {
 
     const UserAvatar = ({ user, message, ...sxProps }) => (
         <Avatar
+            component={Link}
+            to={`/users/${user._id}`}
             src={user.avatar ? `/api/${user.avatar}` : undefined}
             sx={{
                 visibility: message.sender === user._id ? "visible" : "hidden",

@@ -26,7 +26,17 @@ function Profile() {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Box position="sticky" top={0} zIndex={1} p={1}>
+            <Box
+                sx={{
+                    position: "sticky",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                    p: 1,
+                    bgcolor: "background.paper",
+                }}
+            >
                 <Toolbar />
                 <Box
                     sx={{

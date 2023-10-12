@@ -17,5 +17,3 @@ cd client && npm install
 ```sh
 npm start
 ```
-
-> The server should be reachable using the identical host and port as our React application, with the additional path segment `/api`. For example, if our React application is active at `http://localhost:3000`, the server must be accessible at `http://localhost:3000/api`. During development time, refer to the [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development) documentation by Create React App for more information.

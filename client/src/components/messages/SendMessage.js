@@ -49,7 +49,7 @@ function SendMessage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ read: true }),
         })
-            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .then((res) => res.ok || Promise.reject(res))
             .catch((err) => console.log(err));
     };
 

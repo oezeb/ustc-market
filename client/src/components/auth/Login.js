@@ -7,7 +7,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "components/auth/AuthProvider";
-import { useSnackbar } from "components/SnackbarProvider";
 
 const Login = () => {
     const auth = useAuth();

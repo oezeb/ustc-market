@@ -11,7 +11,9 @@ router.use(auth);
 // Returns current user
 router.route("/").get((req, res) => {
     User.findById(req.userId)
-        .then((user) => res.json(user))
+        .then((user) =>
+            user ? res.json(user) : Promise.reject(new Error("User not found"))
+        )
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 

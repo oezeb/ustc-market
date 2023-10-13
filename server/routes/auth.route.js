@@ -23,9 +23,14 @@ router.route("/login").post(async (req, res) => {
         if (!isMatch)
             return res.status(401).json({ error: "Password does not match" });
 
-        const token = jwt.sign({ _id: user._id }, config.JWT_SECRET);
-        res.cookie("token", token, { httpOnly: true });
-        res.json(user);
+        const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+            expiresIn: config.JWT_LIFETIME,
+        });
+
+        res.cookie("token", token, {
+            maxAge: config.JWT_LIFETIME * 1000,
+            httpOnly: true,
+        }).json(user);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

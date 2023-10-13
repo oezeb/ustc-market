@@ -13,7 +13,7 @@ git clone https://github.com/oezeb/alum-market.git
 cd server
 npm install
 ```
-3. Create a `.env` file in the root directory of the project, and add the following environment variables:
+3. Set the following environment variables:
 ```sh
 PORT=5000
 MONGODB_URI=<your mongodb uri>
@@ -23,6 +23,7 @@ ENCRYPTION_KEY=<your encryption key>
 ENCRYPTION_IV=<your encryption iv>
 ENCRYPTION_ALGORITHM=aes-256-cbc
 ```
+> Can also create a `.env` file in the root directory of the project, and add the above environment variables there.
 4. Start the server
 ```sh
 npm start

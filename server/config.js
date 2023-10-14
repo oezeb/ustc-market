@@ -9,7 +9,7 @@ module.exports = {
     MONDODB_TEST_URI: process.env.MONDODB_TEST_URI,
     PORT: process.env.PORT,
     JWT_SECRET: process.env.JWT_SECRET,
-    JWT_LIFETIME: process.env.JWT_LIFETIME, // expressed in seconds or a string describing a time span zeit/ms. Eg: 60, "2 days", "10h", "7d"
+    JWT_LIFETIME: Number(process.env.JWT_LIFETIME), // seconds
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     ENCRYPTION_IV: process.env.ENCRYPTION_IV,
     ENCRYPTION_ALGORITHM: process.env.ENCRYPTION_ALGORITHM,

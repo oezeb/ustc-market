@@ -18,7 +18,6 @@ function AuthProvider(props) {
             if (res.ok) user = await res.json();
         } catch (error) {
             console.error(error);
-            showSnackbar("Something went wrong", "error", 5000);
         }
 
         setUser(user);

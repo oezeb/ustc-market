@@ -51,3 +51,37 @@ git clone https://github.com/oezeb/alum-market.git
 
 - [x] Users are anonymous by default
 - [x] Including the messaging feature, users can choose to share their contact information privately with other users
+
+## Contributing
+
+### Code Style
+
+This project uses [Prettier](https://prettier.io/) to enforce code style. Please ensure that your code is formatted using Prettier before submitting a pull request.
+
+#### Prettier Options
+
+```json
+{
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "css",
+  "insertPragma": false,
+  "singleAttributePerLine": false,
+  "bracketSameLine": false,
+  "jsxBracketSameLine": false,
+  "jsxSingleQuote": false,
+  "printWidth": 80,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "requirePragma": false,
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 4,
+  "trailingComma": "es5",
+  "useTabs": false,
+  "embeddedLanguageFormatting": "auto",
+  "vueIndentScriptAndStyle": false,
+  "parser": "babel"
+}
+```

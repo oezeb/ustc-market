@@ -11,18 +11,20 @@ function AddItem() {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false); // snackbar
 
-    const handleSubmit = (data) => {
-        fetch(apiRoutes.items, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        })
-            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-            .then((data) => navigate("/items/" + data._id))
-            .catch((err) => {
-                console.error(err);
-                setOpen(true);
+    const handleSubmit = async (data) => {
+        try {
+            let res = await fetch(apiRoutes.items, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
             });
+            if (!res.ok) throw res;
+            let item = await res.json();
+            navigate(`/items/${item._id}`);
+        } catch (err) {
+            console.error(err);
+            setOpen(true);
+        }
     };
 
     return (

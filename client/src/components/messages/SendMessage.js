@@ -1,6 +1,8 @@
 import SendIcon from "@mui/icons-material/Send";
+import { Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -8,9 +10,8 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import Toolbar from "@mui/material/Toolbar";
-import React from "react";
-import { Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
+import React from "react";
 
 import { apiRoutes } from "api";
 import { useSnackbar } from "components/SnackbarProvider";
@@ -26,6 +27,7 @@ function SendMessage() {
     const [message, setMessage] = React.useState("");
     const [messages, setMessages] = React.useState(undefined);
     const [otherUser, setOtherUser] = React.useState(undefined);
+    const [loading, setLoading] = React.useState(false);
 
     const maxMessages = 100;
 
@@ -77,33 +79,38 @@ function SendMessage() {
             .catch((err) => console.log(err));
     }, [userId]);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
+
         const formData = new FormData(event.currentTarget);
         const content = formData.get("message");
 
-        fetch(apiRoutes.messages, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ content, item: itemId, receiver: userId }),
-        })
-            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-            .then((data) => {
-                setMessage("");
-                if (data.blocked) {
-                    showSnackbar(
-                        "Message not sent: you have been blocked by this user",
-                        "error",
-                        5000
-                    );
-                } else setMessages([...messages, data]);
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                showSnackbar("Error sending message", "error", 5000);
+        try {
+            let data = { content, item: itemId, receiver: userId };
+            let res = await fetch(apiRoutes.messages, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
             });
+            if (!res.ok) throw res;
+            data = await res.json();
+            setMessage("");
+            if (data.blocked) {
+                showSnackbar(
+                    "Message not sent: you have been blocked by this user",
+                    "error",
+                    5000
+                );
+            } else setMessages([...messages, data]);
+        } catch (err) {
+            console.error(err);
+            showSnackbar("Error sending message", "error", 5000);
+        }
+
+        setLoading(false);
     };
 
     const UserAvatar = ({ user, message, ...sxProps }) => (
@@ -185,12 +192,17 @@ function SendMessage() {
                         placeholder="Send a message..."
                         sx={{ flexGrow: 1 }}
                         required
+                        disabled={loading}
                         autoComplete="off"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
                     <IconButton color="primary" type="submit">
-                        <SendIcon />
+                        {loading ? (
+                            <CircularProgress size={24} />
+                        ) : (
+                            <SendIcon />
+                        )}
                     </IconButton>
                 </Box>
             </Box>

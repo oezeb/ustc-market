@@ -15,14 +15,14 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
 
         const username = event.target.username.value;
         const password = event.target.password.value;
 
-        setLoading(true);
         let user = await auth.login(username, password);
-        setLoading(false);
         if (user) navigate("/", { replace: true });
+        setLoading(false);
     };
 
     return (

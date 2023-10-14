@@ -34,17 +34,22 @@ const SearchBar = ({ onSubmit, defaultValue }) => {
                 onSubmit={onSearchSubmit}
                 sx={{ display: "flex", borderRadius: 5 }}
             >
-                <IconButton sx={{ pl: 1 }} size="small" aria-label="search">
-                    <SearchIcon fontSize="small" />
-                </IconButton>
                 <InputBase
                     placeholder="Search..."
                     inputProps={{ "aria-label": "search" }}
                     fullWidth
                     onChange={onSearchChange}
                     value={value}
+                    sx={{ pl: 2, flexGrow: 1 }}
                 />
-                <input type="submit" hidden />
+                <IconButton
+                    type="submit"
+                    sx={{ pl: 1 }}
+                    size="small"
+                    aria-label="search"
+                >
+                    <SearchIcon fontSize="small" />
+                </IconButton>
             </Paper>
             <TagList onClick={onTagClick} />
         </Box>

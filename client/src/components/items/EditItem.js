@@ -46,22 +46,19 @@ function EditItem() {
             .catch((err) => console.error(err));
     }, [id]);
 
-    const handleSubmit = (data) => {
-        fetch(apiRoutes.items + `/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        })
-            .then((res) => {
-                if (res.ok) {
-                    navigate(`/items/${id}`);
-                } else
-                    throw new Error(`Error ${res.status}: ${res.statusText}`);
-            })
-            .catch((err) => {
-                console.error(err);
-                setOpen(true);
+    const handleSubmit = async (data) => {
+        try {
+            let res = await fetch(apiRoutes.items + `/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
             });
+            if (!res.ok) throw res;
+            navigate(`/items/${id}`);
+        } catch (err) {
+            console.error(err);
+            setOpen(true);
+        }
     };
 
     if (item) {

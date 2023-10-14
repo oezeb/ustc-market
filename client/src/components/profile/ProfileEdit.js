@@ -3,6 +3,7 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Input from "@mui/material/Input";
 import InputLabel from "@mui/material/InputLabel";
 import Snackbar from "@mui/material/Snackbar";
@@ -22,6 +23,7 @@ function ProfileEdit() {
     const [openAvatar, setOpenAvatar] = React.useState(false); // full screen avatar
     const [open, setOpen] = React.useState(false); // Snackbar
     const [msg, setMsg] = React.useState(""); // Snackbar
+    const [loading, setLoading] = React.useState(false); // submit button
 
     const onUploadImage = (event) => {
         if (!event.target.files.length) return;
@@ -43,68 +45,55 @@ function ProfileEdit() {
             method: "POST",
             body: formData,
         });
+        if (!res.ok) throw res;
         const data = await res.json();
         return data[0];
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
+
         const formData = new FormData(event.currentTarget);
-
         const data = {};
-        data.avatar = await uploadAvatar(formData.get("avatar"));
-        if (data.avatar === undefined) {
-            setMsg("Please upload a profile picture");
-            setOpen(true);
-            return;
-        }
-
         data.name = formData.get("name").trim();
 
+        const avatar = formData.get("avatar");
         const password = formData.get("password").trim();
         const newPassword = formData.get("newPassword").trim();
         const confirmPassword = formData.get("confirmPassword").trim();
 
-        if (newPassword || confirmPassword) {
-            if (!password) {
-                setMsg("Please enter your current password");
-                setOpen(true);
-                return;
-            }
-            if (newPassword !== confirmPassword) {
-                setMsg("New password and confirm password do not match");
-                setOpen(true);
-                return;
+        try {
+            data.avatar = await uploadAvatar(avatar);
+            if (newPassword || confirmPassword) {
+                if (!password)
+                    throw new Error("Please enter your current password");
+                if (newPassword !== confirmPassword)
+                    throw new Error(
+                        "New password and confirm password do not match"
+                    );
+
+                const res = await login(user.username, password);
+                if (!res) throw new Error("Incorrect password");
+
+                data.password = newPassword;
             }
 
-            const res = await login(user.username, password);
-            if (!res) {
-                setMsg("Incorrect password");
-                setOpen(true);
-                return;
-            }
-
-            data.password = newPassword;
+            const res = await fetch(apiRoutes.profile, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+            if (!res.ok) throw res;
+            await updateUser();
+            navigate(`/profile`);
+        } catch (err) {
+            console.error(err);
+            setMsg(err.message);
+            setOpen(true);
         }
 
-        fetch(apiRoutes.profile, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        })
-            .then((res) => {
-                if (res.ok) {
-                    updateUser();
-                    navigate(`/profile`);
-                } else {
-                    throw new Error(`Error ${res.status}: ${res.statusText}`);
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                setMsg("Error updating profile. Please try again.");
-                setOpen(true);
-            });
+        setLoading(false);
     };
 
     return (
@@ -170,7 +159,7 @@ function ProfileEdit() {
                 />
             ))}
             <Button type="submit" variant="contained" sx={{ mt: 2 }} fullWidth>
-                Save
+                {loading ? <CircularProgress size={24} /> : "Save"}
             </Button>
             <Snackbar
                 open={open}

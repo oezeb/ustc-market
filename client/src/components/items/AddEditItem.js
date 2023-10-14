@@ -6,6 +6,7 @@ import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
@@ -20,6 +21,7 @@ import { apiRoutes } from "api";
 
 function AddEditItem(props) {
     const { showSoldCheckbox } = props;
+    const [loading, setLoading] = React.useState(false);
     const [images, setImages] = React.useState(props.images || []);
     const [snackbarMsg, setSnackbarMsg] = React.useState(null);
 
@@ -51,6 +53,8 @@ function AddEditItem(props) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setLoading(true);
+
         const formData = new FormData(event.currentTarget);
         if (!props.onSubmit) return;
 
@@ -58,18 +62,19 @@ function AddEditItem(props) {
         data.images = await uploadImages(images);
         if (data.images === null) {
             setSnackbarMsg("Error uploading images");
-            return;
+        } else {
+            data.price = formData.get("price");
+            data.description = formData.get("description");
+            data.sold = formData.get("sold") === "on";
+            data.tags = formData
+                .get("tags")
+                .split(/\W+/)
+                .filter((tag) => tag !== "");
+
+            await props.onSubmit(data);
         }
 
-        data.price = formData.get("price");
-        data.description = formData.get("description");
-        data.sold = formData.get("sold") === "on";
-        data.tags = formData
-            .get("tags")
-            .split(/\W+/)
-            .filter((tag) => tag !== "");
-
-        props.onSubmit(data);
+        setLoading(false);
     };
 
     return (
@@ -114,8 +119,14 @@ function AddEditItem(props) {
                 defaultValue={props.tags?.map((tag) => `#${tag}`).join(" ")}
             />
             <ImagesInput images={images} setImages={setImages} />
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-                Submit
+            <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                sx={{ mt: 2 }}
+            >
+                {loading ? <CircularProgress size={24} /> : "Submit"}
             </Button>
             <Toolbar />
             <Snackbar

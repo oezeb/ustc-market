@@ -32,9 +32,18 @@ const resizeImage = (req, res, next) => {
 
     const resize = async (buffer) => {
         const targetSize = 1024 * 1024 * 1; // 1 MB
-        let quality = 90;
+        const maxWidth = 1280;
+
+        const image = sharp(buffer);
+        const metadata = await image.metadata();
+        const width = Math.min(maxWidth, metadata.width);
+
+        let quality = 100;
         while (buffer.length > targetSize && quality > 0) {
-            buffer = await sharp(buffer).jpeg({ quality: quality }).toBuffer();
+            buffer = await sharp(buffer)
+                .resize(width)
+                .jpeg({ quality: quality })
+                .toBuffer();
             quality -= 10;
         }
 

@@ -20,7 +20,9 @@ const login = async (user) => {
 const newUser = async (user) =>
     new User({
         username: user.username,
+        email: `${user.username}@ustc.edu.cn`,
         password: await bcrypt.hash(user.password, 10),
+        emailVerified: true,
     }).save();
 
 const newItem = async (user) =>

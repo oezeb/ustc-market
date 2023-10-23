@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const { encrypt, decrypt } = require("../encryption");
-const auth = require("../middleware/auth");
+const auth = require("../middlewares/auth.middleware");
 const User = require("../models/user.model");
 const Item = require("../models/item.model");
 const Message = require("../models/message.model");

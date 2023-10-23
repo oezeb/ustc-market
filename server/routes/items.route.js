@@ -2,7 +2,7 @@ const fs = require("fs");
 const router = require("express").Router();
 
 const Item = require("../models/item.model");
-const auth = require("../middleware/auth");
+const auth = require("../middlewares/auth.middleware");
 
 router.use(auth);
 

@@ -3,9 +3,10 @@ const uuid = require("uuid");
 const sharp = require("sharp");
 
 const config = require("../config");
-const { uploadImage, resizeImage } = require("../middleware/upload");
-const auth = require("../middleware/auth");
+const upload = require("../middlewares/upload.middleware");
+const auth = require("../middlewares/auth.middleware");
 
+const { uploadImage, resizeImage } = upload;
 router.use(auth);
 
 // POST /api/upload/images

@@ -1,12 +1,12 @@
-# Alum Market Server
+# USTC Market Server
 
-This is the server for [Alum Market](../README.md). It is a REST API built using Node.js and Express.js.
+This is the server for [USTC Market](../README.md). It is a REST API built using Node.js and Express.js.
 
 ## Installation
 
 1. Clone the repo, if you haven't already
 ```sh
-git clone https://github.com/oezeb/alum-market.git
+git clone https://github.com/oezeb/ustc-market.git
 ```
 2. Install dependencies
 ```sh

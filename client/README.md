@@ -1,12 +1,12 @@
-# Alum Market Client
+# USTC Market Client
 
-This is the client for [Alum Market](../README.md). It is a React application built using [Create React App](https://create-react-app.dev).
+This is the client for [USTC Market](../README.md). It is a React application built using [Create React App](https://create-react-app.dev).
 
 ## Installation
 
 1. Clone the repo, if you haven't already
 ```sh
-git clone https://github.com/oezeb/alum-market.git
+git clone https://github.com/oezeb/ustc-market.git
 ```
 2. Install dependencies
 ```sh

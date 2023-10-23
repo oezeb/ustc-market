@@ -1,10 +1,10 @@
-# Alum Market
+# USTC Market
 
-Alum Market is a web application, built using the MERN stack, that allows users to buy and sell items. This project was inspired by the need for many international students to sell or give away their items before returning to their home countries.
+USTC Market is a web application, built using the MERN stack, that allows users to buy and sell items. This project was inspired by the need for many international students to sell or give away their items before returning to their home countries.
 
 This project hopes to provide a platform for students to exchange items with each other, and to reduce the amount of waste produced by students who are unable to bring their items back home.
 
-Alum Market will only provide basic functionalities such as user authentication, item listing, and messaging. It will not provide payment services or delivery services. The aim of this project is to help connect buyers and sellers, and to provide a platform for them to communicate and arrange for meetups.
+USTC Market will only provide basic functionalities such as user authentication, item listing, and messaging. It will not provide payment services or delivery services. The aim of this project is to help connect buyers and sellers, and to provide a platform for them to communicate and arrange for meetups.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ Alum Market will only provide basic functionalities such as user authentication,
 
 1. Clone the repo
 ```sh
-git clone https://github.com/oezeb/alum-market.git
+git clone https://github.com/oezeb/ustc-market.git
 ```
 2. Setup [server](./server/README.md#installation)
 3. Setup [client](./client/README.md#installation)

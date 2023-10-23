@@ -21,6 +21,8 @@ router.route("/register").post(async (req, res) => {
         await sendVerificationEmail(req.body.email);
         res.status(201).json(user);
     } catch (err) {
+        if (err.code === 11000)
+            return res.status(409).json({ error: "User already exists" });
         res.status(400).json({ error: err.message });
     }
 });

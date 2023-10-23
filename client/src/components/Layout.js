@@ -1,4 +1,3 @@
-import AdbIcon from "@mui/icons-material/Adb";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import HomeIcon from "@mui/icons-material/Home";
@@ -41,21 +40,9 @@ function Layout() {
 }
 
 const Logo = () => (
-    <Button color="inherit" component={Link} to="/">
-        <AdbIcon sx={{ mr: 1 }} />
-        <Typography
-            variant="h6"
-            noWrap
-            sx={{
-                mr: 2,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-            }}
-        >
-            LOGO
+    <Button component={Link} to="/">
+        <Typography variant="h6" noWrap fontWeight="bold" textTransform="none">
+            USTC Market
         </Typography>
     </Button>
 );

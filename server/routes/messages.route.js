@@ -19,7 +19,7 @@ const decryptMessage = (msg) => {
 // orderBy, order, offset, limit, fields
 router.route("/").get((req, res) => {
     const query = {
-        $or: [{ sender: req.userId }, { receiver: req.userId }],
+        $or: [{ sender: req.user._id }, { receiver: req.user._id }],
         blocked: req.query.blocked || false,
     };
 
@@ -53,7 +53,7 @@ router.route("/").get((req, res) => {
 // Query parameters include: sender, receiver, item, blocked, read, otherUser
 router.route("/count").get((req, res) => {
     const query = {
-        $or: [{ sender: req.userId }, { receiver: req.userId }],
+        $or: [{ sender: req.user._id }, { receiver: req.user._id }],
         blocked: req.query.blocked || false,
     };
 
@@ -76,7 +76,7 @@ router.route("/count").get((req, res) => {
 router.route("/:id").get((req, res) => {
     Message.findOne({
         _id: req.params.id,
-        $or: [{ sender: req.userId }, { receiver: req.userId }],
+        $or: [{ sender: req.user._id }, { receiver: req.user._id }],
     })
         .then((msg) => msg || Promise.reject(new Error("Message not found")))
         .then((msg) => res.json(decryptMessage(msg)))
@@ -99,14 +99,14 @@ router.route("/").post(async (req, res) => {
 
     const ownerId = `${owner._id}`;
     const receiverId = `${receiver._id}`;
-    if (receiverId !== ownerId && req.userId !== ownerId)
+    if (receiverId !== ownerId && req.user._id !== ownerId)
         return res.status(400).json({ error: "Not authorized" });
 
     // Item owner should not be the one initiating the conversation
-    if (ownerId === req.userId) {
+    if (ownerId === req.user._id) {
         const msg = await Message.findOne({
             sender: receiverId,
-            receiver: req.userId,
+            receiver: req.user._id,
             item: item._id,
         });
 
@@ -118,11 +118,11 @@ router.route("/").post(async (req, res) => {
     }
 
     new Message({
-        sender: req.userId,
+        sender: req.user._id,
         receiver: receiverId,
         item: item._id,
         content: encrypt(req.body.content),
-        blocked: receiver.blockedUsers?.includes(req.userId),
+        blocked: receiver.blockedUsers?.includes(req.user._id),
     })
         .save()
         .then((msg) => res.json(decryptMessage(msg)))
@@ -135,7 +135,7 @@ router.route("/:id").patch((req, res) => {
     Message.findOneAndUpdate(
         {
             _id: req.params.id,
-            receiver: req.userId,
+            receiver: req.user._id,
         },
         { read: req.body.read }
     )

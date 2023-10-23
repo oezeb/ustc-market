@@ -291,7 +291,6 @@ describe("PATCH /api/messages/:id", () => {
             .patch(`/api/messages/${msg._id}`)
             .set("Cookie", cookie)
             .send({ read: true });
-        console.log(response.body);
         expect(response.status).toBe(204);
     });
 

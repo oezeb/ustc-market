@@ -90,7 +90,7 @@ router.route("/:id").get((req, res) => {
 // Images should be first uploaded to the server using /api/upload/images
 router.route("/").post((req, res) => {
     new Item({
-        owner: req.userId,
+        owner: req.user._id,
         price: req.body.price,
         description: req.body.description,
         sold: req.body.sold,
@@ -107,7 +107,7 @@ router.route("/").post((req, res) => {
 // Images should be first uploaded to the server using /api/upload/images
 router.route("/:id").patch((req, res) => {
     Item.findOneAndUpdate(
-        { _id: req.params.id, owner: req.userId },
+        { _id: req.params.id, owner: req.user._id },
         {
             price: req.body.price,
             description: req.body.description,
@@ -131,7 +131,7 @@ router.route("/:id").patch((req, res) => {
 // DELETE /api/items/:id
 // Deletes current user's item with specified id
 router.route("/:id").delete(async (req, res) => {
-    Item.findOneAndDelete({ _id: req.params.id, owner: req.userId })
+    Item.findOneAndDelete({ _id: req.params.id, owner: req.user._id })
         .then((item) => {
             if (!item) return Promise.reject(new Error("Item not found"));
             item.images?.forEach((image) => {

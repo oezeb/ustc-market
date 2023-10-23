@@ -10,7 +10,7 @@ router.use(auth);
 // GET /api/profile
 // Returns current user
 router.route("/").get((req, res) => {
-    User.findById(req.userId)
+    User.findById(req.user._id)
         .then((user) =>
             user ? res.json(user) : Promise.reject(new Error("User not found"))
         )
@@ -28,7 +28,7 @@ router.route("/").patch(async (req, res) => {
         data.password = await bcrypt.hash(req.body.password, 10);
     if (req.body.blockedUsers) data.blockedUsers = req.body.blockedUsers;
 
-    User.findByIdAndUpdate(req.userId, data)
+    User.findByIdAndUpdate(req.user._id, data)
         .then((user) => {
             if (!user) return Promise.reject(new Error("User not found"));
             if (user.avatar && fs.existsSync(user.avatar))

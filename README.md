@@ -28,7 +28,8 @@ git clone https://github.com/oezeb/ustc-market.git
 ### User Authentication
 
 - [ ] Users can sign in using the university SSO
-- [x] No public facing registration page. Admins can create new users if necessary.
+- [x] ~~No public facing registration page. Admins can create new users if necessary.~~
+- [ ] Users can register using their university email address
 - [x] Users can sign in using their username and password
 - [x] Users can change basic profile information including password
 - [x] Admins can help users reset their passwords

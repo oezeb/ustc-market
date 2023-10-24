@@ -102,22 +102,19 @@ function ProfileEdit() {
             <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Box width="60%">
                     <TextField
-                        name="name"
-                        label="Name"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        size="small"
-                        defaultValue={user.name}
-                        placeholder="Anonymous"
-                    />
-                    <TextField
                         label="Username"
                         variant="standard"
                         fullWidth
-                        margin="normal"
                         size="small"
                         defaultValue={user.username}
+                        disabled
+                    />
+                    <TextField
+                        label="Email"
+                        variant="standard"
+                        fullWidth
+                        size="small"
+                        defaultValue={user.email}
                         disabled
                     />
                 </Box>
@@ -142,8 +139,18 @@ function ProfileEdit() {
                     </InputLabel>
                 </Box>
             </Box>
+            <TextField
+                name="name"
+                label="Name"
+                variant="standard"
+                fullWidth
+                margin="normal"
+                size="small"
+                defaultValue={user.name}
+                placeholder="Anonymous"
+            />
             {[
-                ["password", "Password"],
+                ["password", "Old Password"],
                 ["newPassword", "New Password"],
                 ["confirmPassword", "Confirm Password"],
             ].map(([name, label]) => (

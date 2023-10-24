@@ -1,6 +1,6 @@
 import BorderColor from "@mui/icons-material/BorderColor";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { IconButton } from "@mui/material";
+import { Chip, IconButton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import ListItemText from "@mui/material/ListItemText";
@@ -63,15 +63,17 @@ function Profile() {
                             </IconButton>
                         </ListItemText>
                         <Box sx={{ flexGrow: 1 }} />
-                        <Box display="flex">
-                            <IconButton size="small" onClick={onLogout}>
-                                <LogoutIcon fontSize="inherit" />
-                                <Typography ml={0.5} variant="caption">
-                                    Logout
-                                </Typography>
-                            </IconButton>
-                        </Box>
+                        <Typography color="text.secondary" variant="body2">
+                            {user.email}
+                        </Typography>
                     </Box>
+                    <Box sx={{ flexGrow: 1 }} />
+                    <Chip
+                        onClick={onLogout}
+                        icon={<LogoutIcon fontSize="small" />}
+                        label="Logout"
+                        sx={{ alignSelf: "center" }}
+                    />
                 </Box>
             </Box>
             <ItemListContent owner={user._id} />

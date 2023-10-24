@@ -1,9 +1,9 @@
 import { LinearProgress } from "@mui/material";
-import { useSnackbar } from "components/SnackbarProvider";
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const { apiRoutes } = require("api");
+import { apiRoutes } from "api";
+import { useSnackbar } from "components/SnackbarProvider";
 
 const AuthContext = React.createContext();
 
@@ -35,6 +35,8 @@ function AuthProvider(props) {
             });
 
             if (res.ok) user = await updateUser();
+            else if (res.status === 403)
+                showSnackbar("Email not verified", "error", 5000);
             else showSnackbar("Invalid username or password", "error", 5000);
         } catch (error) {
             console.error(error);

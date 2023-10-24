@@ -8,17 +8,23 @@ function SnackbarProvider({ children }) {
     const [message, setMessage] = React.useState("");
     const [severity, setSeverity] = React.useState("success");
     const [duration, setDuration] = React.useState(undefined);
+    const [action, setAction] = React.useState(undefined);
 
-    const showSnackbar = (message, severity, duration) => {
+    const showSnackbar = (message, severity, duration, action) => {
         setMessage(message);
         setSeverity(severity);
         setDuration(duration);
+        setAction(action);
+
         setOpen(true);
     };
 
     const closeSnackbar = (event, reason) => {
         if (reason === "clickaway") return;
         setOpen(false);
+
+        setDuration(undefined);
+        setAction(undefined);
     };
 
     return (
@@ -32,6 +38,7 @@ function SnackbarProvider({ children }) {
                 <Alert
                     onClose={closeSnackbar}
                     severity={severity}
+                    action={action}
                     sx={{ width: "100%" }}
                 >
                     {message}

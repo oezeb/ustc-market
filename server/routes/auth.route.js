@@ -68,8 +68,8 @@ router.route("/logout").post((req, res) => {
     res.status(204).json();
 });
 
-// PATCH /api/auth/send-verification-email/:email
-router.route("/send-verification-email/:email").patch((req, res) =>
+// POST /api/auth/send-verification-email/:email
+router.route("/send-verification-email/:email").post((req, res) =>
     sendVerificationEmail(req.params.email)
         .then(() => res.status(204).json())
         .catch((err) => res.status(400).json({ error: err.message }))
@@ -83,9 +83,9 @@ router.route("/verify-email").patch(auth, (req, res) => {
         .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// PATCH /api/auth/send-reset-password-email/:email
-router.route("/send-reset-password-email/:email").patch((req, res) =>
-    sendResetPasswordEmail(email)
+// POST /api/auth/send-reset-password-email/:email
+router.route("/send-reset-password-email/:email").post((req, res) =>
+    sendResetPasswordEmail(req.params.email)
         .then(() => res.status(204).json())
         .catch((err) => res.status(400).json({ error: err.message }))
 );

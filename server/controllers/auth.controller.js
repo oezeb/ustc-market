@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 const sendVerificationEmail = async (email) => {
     const token = jwt.sign({ email }, config.JWT_SECRET);
-    const url = `https://${config.DOMAIN}/verify-email/${token}`;
+    const url = `https://${config.DOMAIN}/verification-email/${token}`;
 
     const mailOptions = {
         from: config.EMAIL_USER,
@@ -39,7 +39,8 @@ const sendResetPasswordEmail = async (email) => {
         from: config.EMAIL_USER,
         to: email,
         subject: "Reset Password",
-        html: `<p>Please click <a href="${url}">here</a> to reset your password.</p>`,
+        html: `<p>Please click <a href="${url}">here</a> to reset your password.</br></br>
+        This link will expire in ${config.JWT_LIFETIME / 3600} hours.</p>`,
     };
 
     await transporter.sendMail(mailOptions);

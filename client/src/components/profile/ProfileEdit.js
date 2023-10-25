@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 import { apiRoutes } from "api";
 import { useAuth } from "components/auth/AuthProvider";
-import ImageBackdrop from "components/ImageBacdrop";
+import ImageBackdrop from "components/ImageBackdrop";
 
 function ProfileEdit() {
     const { user, login, updateUser } = useAuth();

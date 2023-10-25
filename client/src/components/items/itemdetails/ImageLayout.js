@@ -1,5 +1,5 @@
 import React from "react";
-import ImageBackdrop from "components/ImageBacdrop";
+import ImageBackdrop from "components/ImageBackdrop";
 
 const ImageLayout = ({ images }) => {
     const [open, setOpen] = React.useState(false);

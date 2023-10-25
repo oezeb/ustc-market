@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { apiRoutes } from "api";
 import { useAuth } from "components/auth/AuthProvider";
 import ItemListContent from "components/items/itemlist/ItemListContent";
-import ImageBackdrop from "components/ImageBacdrop";
+import ImageBackdrop from "components/ImageBackdrop";
 
 function Profile() {
     const { user } = useAuth();

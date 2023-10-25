@@ -50,6 +50,8 @@ function ItemListContent(props) {
 
     if (!items) return items === undefined ? <ItemListContentSkeleton /> : null;
 
+    const count = Math.ceil(itemCount / itemsperPage);
+
     return (
         <>
             <ImageList variant="masonry" gap={8} cols={itemsPerRow}>
@@ -57,12 +59,14 @@ function ItemListContent(props) {
                     <ItemView key={index} item={item} />
                 ))}
             </ImageList>
-            <Pagination
-                sx={{ alignSelf: "center" }}
-                count={Math.ceil(itemCount / itemsperPage)}
-                page={page}
-                onChange={(event, value) => setPage(value)}
-            />
+            {count > 0 && (
+                <Pagination
+                    sx={{ alignSelf: "center" }}
+                    count={count}
+                    page={page}
+                    onChange={(event, value) => setPage(value)}
+                />
+            )}
         </>
     );
 }

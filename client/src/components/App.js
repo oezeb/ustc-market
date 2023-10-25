@@ -16,6 +16,8 @@ import SendMessage from "./messages/SendMessage";
 import Profile from "./profile/Profile";
 import ProfileEdit from "./profile/ProfileEdit";
 import Users from "./users/Users";
+import Privacy from "./Privacy";
+import Terms from "./Terms";
 
 const App = () => (
     <SnackbarProvider>
@@ -27,6 +29,9 @@ const App = () => (
                 element={<VerificationEmail />}
             />
             <Route path="/reset-password/:token?" element={<ResetPassword />} />
+
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             <Route
                 path="/"

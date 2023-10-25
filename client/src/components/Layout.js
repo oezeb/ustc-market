@@ -25,7 +25,7 @@ function Layout() {
     const hideBottomBar = path.match(/^\/messages\/\w+\/\w+\/?$/); // send message page
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box flexGrow={1}>
             <AppBar color="default">
                 <Toolbar>
                     {value ? <Logo /> : <BackButton />}
@@ -34,12 +34,14 @@ function Layout() {
                 </Toolbar>
             </AppBar>
             <Outlet />
+            <CopyRight />
+            <Toolbar />
             {!hideBottomBar && <BottomBar value={value} setValue={setValue} />}
         </Box>
     );
 }
 
-const Logo = () => (
+export const Logo = () => (
     <Button component={Link} to="/">
         <Typography variant="h6" noWrap fontWeight="bold" textTransform="none">
             USTC Market
@@ -78,6 +80,38 @@ const MessageIconBadge = () => {
                 <MessageIcon />
             </Badge>
         </IconButton>
+    );
+};
+
+export const CopyRight = () => {
+    const A = (props) => (
+        <Typography
+            component={Link}
+            variant="body2"
+            color="text.secondary"
+            {...props}
+        />
+    );
+
+    return (
+        <Box>
+            <Box
+                display="flex"
+                justifyContent="space-evenly"
+                position="sticky"
+                bottom={0}
+                left={0}
+                right={0}
+                m={1}
+            >
+                <A to="/privacy">Privacy Policy</A>
+                <A to="/terms">Terms of Use</A>
+                <Typography variant="body2" color="text.secondary">
+                    © 2023 USTC Market by{" "}
+                    <a href="https://github.com/oezeb">Ez</a>
+                </Typography>
+            </Box>
+        </Box>
     );
 };
 

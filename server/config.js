@@ -13,7 +13,7 @@ module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
     MONDODB_TEST_URI: process.env.MONDODB_TEST_URI,
 
-    // JWT TOKEN
+    // JWT TOKEN for authentication
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_LIFETIME: Number(process.env.JWT_LIFETIME), // seconds
 

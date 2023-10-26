@@ -108,7 +108,13 @@ export const CopyRight = () => {
                 <A to="/terms">Terms of Use</A>
                 <Typography variant="body2" color="text.secondary">
                     © 2023 USTC Market by{" "}
-                    <a href="https://github.com/oezeb">Ez</a>
+                    <a
+                        href="https://github.com/oezeb"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Ez
+                    </a>
                 </Typography>
             </Box>
         </Box>

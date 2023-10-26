@@ -34,8 +34,12 @@ function Layout() {
                 </Toolbar>
             </AppBar>
             <Outlet />
-            <CopyRight />
-            <Toolbar />
+            {!hideMessageIcon && (
+                <>
+                    <CopyRight />
+                    <Toolbar />
+                </>
+            )}
             {!hideBottomBar && <BottomBar value={value} setValue={setValue} />}
         </Box>
     );
@@ -89,24 +93,30 @@ export const CopyRight = () => {
             component={Link}
             variant="body2"
             color="text.secondary"
+            noWrap
             {...props}
         />
     );
 
     return (
-        <Box>
-            <Box
-                display="flex"
-                justifyContent="space-evenly"
-                position="sticky"
-                bottom={0}
-                left={0}
-                right={0}
-                m={1}
-            >
+        <Box
+            display="flex"
+            flexWrap="wrap"
+            justifyContent="space-evenly"
+            position="sticky"
+            bottom={0}
+            left={0}
+            right={0}
+            m={1}
+        >
+            <Box>
                 <A to="/privacy">Privacy Policy</A>
+            </Box>
+            <Box>
                 <A to="/terms">Terms of Use</A>
-                <Typography variant="body2" color="text.secondary">
+            </Box>
+            <Box>
+                <Typography variant="body2" color="text.secondary" noWrap>
                     © 2023 USTC Market by{" "}
                     <a
                         href="https://github.com/oezeb"

@@ -38,19 +38,13 @@ function Profile() {
                 }}
             >
                 <Toolbar />
-                <Box
-                    sx={{
-                        color: "inherit",
-                        textDecoration: "inherit",
-                        display: "flex",
-                    }}
-                >
+                <Box color="inherit" textDecoration="inherit" display="flex">
                     <Avatar
                         src={`/api/${user?.avatar}`}
-                        sx={{ width: 100, height: 100, mr: 2 }}
+                        sx={{ width: 64, height: 64, mr: 2 }}
                         onClick={() => setOpen(true)}
                     />
-                    <Box display="flex" flexDirection="column">
+                    <Box display="flex" flexDirection="column" maxWidth={300}>
                         <ListItemText secondary={user.username} sx={{ m: 0 }}>
                             <Typography
                                 component="span"
@@ -67,7 +61,7 @@ function Profile() {
                             {user.email}
                         </Typography>
                     </Box>
-                    <Box sx={{ flexGrow: 1 }} />
+                    <Box flexGrow={1} />
                     <Chip
                         onClick={onLogout}
                         icon={<LogoutIcon fontSize="small" />}

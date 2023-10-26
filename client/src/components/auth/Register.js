@@ -149,11 +149,19 @@ function Register() {
                     label={
                         <Typography variant="body2">
                             I agree to the{" "}
-                            <Link to="/terms" target="_blank">
+                            <Link
+                                to="/terms"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 Terms of Use
                             </Link>{" "}
                             and{" "}
-                            <Link to="/privacy" target="_blank">
+                            <Link
+                                to="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 Privacy Policy
                             </Link>
                         </Typography>

@@ -95,6 +95,8 @@ export const CopyRight = () => {
             color="text.secondary"
             noWrap
             {...props}
+            target="_blank"
+            rel="noopener noreferrer"
         />
     );
 
@@ -118,13 +120,13 @@ export const CopyRight = () => {
             <Box>
                 <Typography variant="body2" color="text.secondary" noWrap>
                     © 2023 USTC Market by{" "}
-                    <a
-                        href="https://github.com/oezeb"
+                    <Link
+                        to="https://github.com/oezeb"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         Ez
-                    </a>
+                    </Link>
                 </Typography>
             </Box>
         </Box>

@@ -14,6 +14,10 @@ function Terms() {
                 <h2>Terms of Use</h2>
                 <h3>1. Acceptance of Terms</h3>
                 <p>
+                    USTC Market has no direct connection with the University of
+                    Science and Technology of China (USTC), and is not
+                    affiliated with any institution or organization under USTC.{" "}
+                    <br />
                     By using the USTC Market platform, you agree to comply with
                     and be bound by these Terms of Use. If you do not agree with
                     these terms, please do not use the Platform.

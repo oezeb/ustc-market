@@ -95,7 +95,7 @@ function Register() {
                             variant="standard"
                             required
                             label="Email"
-                            inputProps={{ pattern: "^[a-zA-Z0-9\\-\\.]+$" }}
+                            inputProps={{ pattern: "^[a-zA-Z0-9_\\-\\.]+$" }}
                             autoFocus
                             fullWidth
                             error={emailError !== ""}

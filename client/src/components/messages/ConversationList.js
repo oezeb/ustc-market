@@ -15,16 +15,18 @@ function ConversationList() {
         fetch(apiRoutes.messages)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
-                // group by item
                 const grouped = data.reduce((acc, msg) => {
-                    acc[msg.item] = acc[msg.item] || [];
-                    acc[msg.item].push(msg);
+                    const otherUser =
+                        msg.sender === user._id ? msg.receiver : msg.sender;
+                    const key = `${msg.item}-${otherUser}`;
+                    acc[key] = acc[key] || [];
+                    acc[key].push(msg);
                     return acc;
                 }, {});
 
                 const latestMessages = Object.keys(grouped)
-                    .map((item) => {
-                        const messages = grouped[item];
+                    .map((key) => {
+                        const messages = grouped[key];
                         const latestMessage = messages[messages.length - 1];
                         const otherUser =
                             latestMessage.sender === user._id
@@ -33,7 +35,12 @@ function ConversationList() {
                         const unread = messages.filter(
                             (msg) => msg.receiver === user._id && !msg.read
                         ).length;
-                        return { item, otherUser, latestMessage, unread };
+                        return {
+                            item: latestMessage.item,
+                            otherUser,
+                            latestMessage,
+                            unread,
+                        };
                     })
                     .sort((a, b) => {
                         const aDate = new Date(a.latestMessage.createdAt);

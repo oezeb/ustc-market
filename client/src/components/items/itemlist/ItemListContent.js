@@ -12,7 +12,7 @@ function ItemListContent(props) {
     const [page, setPage] = React.useState(1);
 
     const itemsperPage = 10;
-    const itemsPerRow = Math.floor(window.innerWidth / 200);
+    const itemsPerRow = Math.floor(window.innerWidth / 150);
 
     React.useEffect(() => {
         const { q, tagsQuery, owner, sold } = props;

@@ -7,6 +7,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import ProfileProductAdd from "./pages/ProfileProductAdd";
@@ -74,6 +75,10 @@ export default createBrowserRouter([
                         Component: UserProducts,
                     },
                 ],
+            },
+            {
+                path: "*",
+                Component: NotFound,
             },
         ],
     },

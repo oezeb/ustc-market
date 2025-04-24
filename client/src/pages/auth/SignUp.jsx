@@ -132,13 +132,18 @@ function Register() {
                         />
                     </Stack>
 
-                    <Stack direction="row" width="100%" alignItems="center">
+                    <Stack
+                        direction="row"
+                        width="100%"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
                         <Checkbox defaultChecked={false} required />
                         <Typography variant="body2">
                             <span>I agree to USTC Market </span>
-                            <Link>Terms and Conditions</Link>
-                            <span> and </span>
-                            <Link>Privacy Policy</Link>
+                            <Link to="/terms-of-service.html" target="_blank">
+                                Terms and Conditions
+                            </Link>
                         </Typography>
                     </Stack>
                     <Button

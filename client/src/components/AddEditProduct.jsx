@@ -100,8 +100,13 @@ export default function AddEditProduct({
         let name = formData.get("name");
         let category = formData.get("category");
         let price = formData.get("price");
+        let contact = formData.get("contact");
+        let location = formData.get("location");
         let description = formData.get("description");
         let sold = formData.get("sold") === "on";
+
+        if (!product?.id)
+            description = `${description}\n\n${contact}\nLocation: ${location}`;
 
         var oldImages = [];
         var newImages = [];
@@ -181,6 +186,31 @@ export default function AddEditProduct({
                         }}
                     />
                 </Grid>
+                {!product?.id && (
+                    <>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                name="contact"
+                                label="Contact"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                required
+                                placeholder="WeChat ID: xxxxxx"
+                            />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <TextField
+                                name="location"
+                                label="Location"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                placeholder="East Campus"
+                            />
+                        </Grid>
+                    </>
+                )}
                 <Grid size={12}>
                     <TextField
                         name="description"

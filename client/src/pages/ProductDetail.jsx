@@ -75,7 +75,7 @@ export default function ProductDetail() {
                         </Button>
                     </Box>
                     <Typography variant="h6">{product.name}</Typography>
-                    <Typography variant="body2">
+                    <Typography variant="body2" whiteSpace="pre-line">
                         {product.description}
                     </Typography>
                     {product.images.map((image, index) => (

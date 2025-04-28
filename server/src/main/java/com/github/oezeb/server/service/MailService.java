@@ -34,7 +34,7 @@ public class MailService {
         String content = "<p>Hi " + name + ",</p>"
                 + "<p>Please verify your email by clicking the link below:</p>"
                 + "<a href=\"" + verificationLink + "\">Verify Email</a>"
-                + "<p>This link will expire on " + tokenResponse.expiration + ".</p>"
+                + "<p>This link will expire on " + tokenResponse.expiration / 60 + " minutes.</p>"
                 + "<p>If you didn't request this, you can safely ignore this email.</p>"
                 + "<p>Best regards, <br>USTC Market</p>";
 
@@ -56,7 +56,7 @@ public class MailService {
                 + "<p>Click the link below to set a new password:</p>"
                 + "<a href=\"" + resetLink + "\">Reset Password</a>"
                 + "<p>If you didn’t request this, you can safely ignore this email.</p>"
-                + "<p>This link will expire on " + tokenResponse.expiration + ".</p>"
+                + "<p>This link will expire on " + tokenResponse.expiration / 60 + " minutes.</p>"
                 + "<p>Best regards, <br>USTC Market</p>";
 
         sendEmail(to, subject, content, true);
